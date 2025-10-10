@@ -39,7 +39,7 @@ public abstract class MxItem implements Listener {
     private final LanguageManager languageManager;
     private final Action[] actions;
 
-    public MxItem(ItemStack is, MxWorldFilter worldFilter, boolean gameItem, Action... actions) {
+    public MxItem(ItemStack is, MxWorldFilter worldFilter, Action... actions) {
         this.is = is;
         this.worldFilter = worldFilter;
         this.languageManager = LanguageManager.getInstance();
