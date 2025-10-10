@@ -100,6 +100,13 @@ public final class LanguageManager {
         ensureAvailability(path);
 
         String text = languageConfig.getString(path, "LANGUAGE_NOT_FOUND");
+
+        // Log an error if the requested language entry was not found, including the looked-up key
+        if ("LANGUAGE_NOT_FOUND".equals(text)) {
+            Logger.logMessage(LogLevel.ERROR, StandardPrefix.LANGUAGE_MANAGER,
+                    "Language entry not found for key: '" + path + "'");
+        }
+
         if (placeholders != null && !placeholders.isEmpty()) {
             for (int i = 0; i < placeholders.size(); i++) {
                 text = text.replace("%%" + (i + 1) + "%%", placeholders.get(i));
