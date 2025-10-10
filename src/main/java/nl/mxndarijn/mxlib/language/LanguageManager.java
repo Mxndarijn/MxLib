@@ -215,8 +215,9 @@ public final class LanguageManager {
                         "Base default language resource not found: " + baseRes);
             }
         } catch (Exception e) {
+            File file = new File(plugin.getDataFolder(), baseRes);
             Logger.logMessage(LogLevel.ERROR, StandardPrefix.LANGUAGE_MANAGER,
-                    "Could not load base default language from resources: " + e.getMessage());
+                    "Could not load base default language from resources: " + e.getMessage() + " baseRes=" + baseRes + "  file=" + file.getAbsolutePath());
         }
 
         languageConfig.options().copyDefaults(true);
