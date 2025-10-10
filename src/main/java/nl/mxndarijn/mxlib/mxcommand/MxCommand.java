@@ -68,16 +68,16 @@ public abstract class MxCommand implements CommandExecutor {
         }
 
         // World filter (generic)
-        if (sender instanceof Player player && worldFilter != null) {
-            if (!worldFilter.isPlayerInCorrectWorld(player)) {
-                MessageUtil.sendMessageToPlayer(sender,
-                        languageManager.getLanguageString(
-                                StandardLanguageText.NOT_CORRECT_WORLD,
-                                Collections.emptyList(),
-                                chatPrefixManager.requireFind(StandardChatPrefix.DEFAULT)));
-                return true;
-            }
-        }
+//        if (sender instanceof Player player && worldFilter != null) {
+//            if (!worldFilter.isPlayerInCorrectWorld(player)) {
+//                MessageUtil.sendMessageToPlayer(sender,
+//                        languageManager.getLanguageString(
+//                                StandardLanguageText.NOT_CORRECT_WORLD,
+//                                Collections.emptyList(),
+//                                chatPrefixManager.requireFind(StandardChatPrefix.DEFAULT)));
+//                return true;
+//            }
+//        }
 
         // Project-specific policy hooks
         if (!canExecute(sender, command, label, args)) {

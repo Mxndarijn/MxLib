@@ -79,16 +79,16 @@ public abstract class MxItem implements Listener {
         }
 
         // World filter (generic)
-        if (worldFilter != null) {
-            if (!worldFilter.isPlayerInCorrectWorld(p)) {
-                MessageUtil.sendMessageToPlayer(p,
-                        languageManager.getLanguageString(
-                                StandardLanguageText.NOT_CORRECT_WORLD,
-                                Collections.emptyList(),
-                                ChatPrefixManager.getInstance().requireFind(StandardChatPrefix.DEFAULT)));
-                return;
-            }
-        }
+//        if (worldFilter != null) {
+//            if (!worldFilter.isPlayerInCorrectWorld(p)) {
+//                MessageUtil.sendMessageToPlayer(p,
+//                        languageManager.getLanguageString(
+//                                StandardLanguageText.NOT_CORRECT_WORLD,
+//                                Collections.emptyList(),
+//                                ChatPrefixManager.getInstance().requireFind(StandardChatPrefix.DEFAULT)));
+//                return;
+//            }
+//        }
 
         try {
             execute(p, e);
