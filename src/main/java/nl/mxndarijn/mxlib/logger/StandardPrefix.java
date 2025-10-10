@@ -14,7 +14,8 @@ public enum StandardPrefix implements PrefixType {
     CHANGEWORLD_MANAGER("<aqua>ChangeWorld-Manager"),
     LANGUAGE_MANAGER("<gold>Language-Manager"),
     CONFIG_FILES("<yellow>Config-Files"),
-    PERMISSION_SERVICE("<yellow>Permission-Manager");
+    PERMISSION_SERVICE("<yellow>Permission-Manager"),
+    LOGGER("<dark_purple>Logger");
 
     private final String prefix;
     private final String name;
