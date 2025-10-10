@@ -12,7 +12,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +24,7 @@ public final class LanguageManager {
 
     private static LanguageManager instance;
 
-    /** Active language configuration (disk file + merged defaults). */
+    /** Active language configuration (selected file on disk + merged defaults). */
     private final FileConfiguration languageConfig;
 
     /** Physical file backing the active language configuration. */
@@ -30,13 +33,13 @@ public final class LanguageManager {
     private LanguageManager() {
         final JavaPlugin plugin = MxLib.getPlugin();
 
-        // Resolve configured language file (e.g. "languages/nl-NL.yml" or just "nl-NL.yml")
+        // Resolve configured language file (e.g., "languages/nl-NL.yml" or just "nl-NL.yml")
         final String configuredPath = ConfigService.getInstance()
                 .get(StandardConfigFile.MAIN_CONFIG)
                 .getCfg()
                 .getString("language-file", StandardConfigFile.DEFAULT_LANGUAGE.fileName());
 
-        // Always store under <dataFolder>/languages/<file>
+        // Normalize to <dataFolder>/languages/<file>
         final String fileName = configuredPath.contains("/")
                 ? configuredPath.substring(configuredPath.lastIndexOf('/') + 1)
                 : configuredPath;
@@ -49,13 +52,13 @@ public final class LanguageManager {
 
         File candidate = new File(languagesDir, fileName);
 
-        // Ensure selected file exists on disk; copy from JAR if present
+        // Ensure the configured language file exists on disk; copy from JAR if present
         if (!candidate.exists()) {
-            // NOTE: resource path should include "languages/"
+            // Important: resource path should include "languages/"
             Functions.copyFileFromResources("languages/" + fileName, "languages/" + fileName);
         }
 
-        // Fallback to base default file if still missing
+        // Fallback to default language file if still missing
         if (!candidate.exists()) {
             Logger.logMessage(LogLevel.FATAL, StandardPrefix.LANGUAGE_MANAGER,
                     "Could not load language file '" + configuredPath + "'. Falling back to default '"
@@ -85,12 +88,18 @@ public final class LanguageManager {
     }
 
     // -------------------------------------------------------------------------
-    // Public API
+    // Public API (names preserved)
     // -------------------------------------------------------------------------
 
-    /** Get by raw key. Placeholders are 1-based: %%1%%, %%2%%, ... */
-    public String get(String key, List<String> placeholders) {
-        String text = languageConfig.getString(key, "LANGUAGE_NOT_FOUND");
+    /**
+     * Returns the localized string for the given key with positional placeholders (%%1%%, %%2%%, ...).
+     * Ensures availability by backfilling from embedded defaults when missing.
+     */
+    public String getLanguageString(LanguageKey key, List<String> placeholders) {
+        final String path = key.key();
+        ensureAvailability(path);
+
+        String text = languageConfig.getString(path, "LANGUAGE_NOT_FOUND");
         if (placeholders != null && !placeholders.isEmpty()) {
             for (int i = 0; i < placeholders.size(); i++) {
                 text = text.replace("%%" + (i + 1) + "%%", placeholders.get(i));
@@ -99,35 +108,52 @@ public final class LanguageManager {
         return text;
     }
 
-    /** Get by raw key without placeholders. */
-    public String get(String key) {
-        return get(key, Collections.emptyList());
+    /** Convenience overload without placeholders. */
+    public String getLanguageString(LanguageKey key) {
+        return getLanguageString(key, Collections.emptyList());
     }
 
-    /** Get by LanguageKey (your enums can still implement LanguageKey). */
-    public String get(LanguageKey key) {
-        return get(key.key(), Collections.emptyList());
+    /** Convenience overload with prefix. */
+    public String getLanguageString(LanguageKey key, List<String> placeholders, ChatPrefixType prefix) {
+        return String.valueOf(prefix) + getLanguageString(key, placeholders);
     }
 
-    /** Get with placeholders by LanguageKey. */
-    public String get(LanguageKey key, List<String> placeholders) {
-        return get(key.key(), placeholders);
-    }
-
-    /** Get with prefix + placeholders. */
-    public String get(LanguageKey key, List<String> placeholders, ChatPrefixType prefix) {
-        return String.valueOf(prefix) + get(key.key(), placeholders);
-    }
-
-    /** Get with prefix (no placeholders). */
-    public String get(LanguageKey key, ChatPrefixType prefix) {
-        return String.valueOf(prefix) + get(key.key(), Collections.emptyList());
+    /** Convenience overload with prefix and no placeholders. */
+    public String getLanguageString(LanguageKey key, ChatPrefixType prefix) {
+        return String.valueOf(prefix) + getLanguageString(key, Collections.emptyList());
     }
 
     // -------------------------------------------------------------------------
     // Internal helpers
     // -------------------------------------------------------------------------
 
+    /** Ensures a key exists in the active file; if missing, populate from embedded defaults or mark as not found. */
+    private void ensureAvailability(String path) {
+        if (languageConfig.contains(path)) return;
+
+        final JavaPlugin plugin = MxLib.getPlugin();
+        final String defaultRes = "languages/" + StandardConfigFile.DEFAULT_LANGUAGE.fileName();
+
+        FileConfiguration defaults = loadResourceYaml(plugin, defaultRes);
+        String value = defaults != null ? defaults.getString(path) : null;
+
+        if (value == null) {
+            value = "LANGUAGE_NOT_FOUND";
+            Logger.logMessage(LogLevel.ERROR, StandardPrefix.LANGUAGE_MANAGER,
+                    path + " has no default value; please add it to the language resources.");
+        }
+
+        languageConfig.addDefault(path, value);
+        languageConfig.options().copyDefaults(true);
+        try {
+            languageConfig.save(languageFile);
+        } catch (IOException e) {
+            Logger.logMessage(LogLevel.ERROR, StandardPrefix.LANGUAGE_MANAGER,
+                    "Could not save language file: " + e.getMessage());
+        }
+    }
+
+    /** Merges defaults from selected and base default resource files into the active configuration. */
     private void mergeDefaults(JavaPlugin plugin, String selectedFileName, String defaultFileName) {
         int before = languageConfig.getKeys(true).size();
 
@@ -149,7 +175,7 @@ public final class LanguageManager {
             languageConfig.save(languageFile);
         } catch (IOException e) {
             Logger.logMessage(LogLevel.ERROR, StandardPrefix.LANGUAGE_MANAGER,
-                    "Error while saving merged language defaults: " + e.getMessage());
+                    "Error while ensuring language defaults: " + e.getMessage());
         }
 
         int added = Math.max(0, languageConfig.getKeys(true).size() - before);
@@ -159,7 +185,7 @@ public final class LanguageManager {
         }
     }
 
-    /** Safe loader for embedded YAML; never uses try-with-resources on nullable streams. */
+    /** Safe loader for embedded YAML; returns null if resource is missing. */
     private static FileConfiguration loadResourceYaml(JavaPlugin plugin, String resPath) {
         InputStream in = plugin.getResource(resPath);
         if (in == null) return null;
