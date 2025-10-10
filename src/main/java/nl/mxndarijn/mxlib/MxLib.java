@@ -14,6 +14,7 @@ public class MxLib {
     @Getter
     private static JavaPlugin plugin;
 
+
     public static void init(JavaPlugin p, String permissionPrefix) {
         plugin = p;
         ConfigService.init(plugin);
