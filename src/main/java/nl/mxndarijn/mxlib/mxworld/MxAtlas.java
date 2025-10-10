@@ -31,16 +31,26 @@ public class MxAtlas {
         MxAtlas.plugin = plugin;
     }
 
-    private MxAtlas() {
+    private MxAtlas(JavaPlugin plugin) {
         Logger.logMessage(LogLevel.INFORMATION, StandardPrefix.MXATLAS, "Started MxAtlas... (World-Manager)");
         worlds = new ArrayList<>();
+        setPlugin(plugin);
     }
 
     public static MxAtlas getInstance() {
         if (instance == null) {
-            instance = new MxAtlas();
+            throw new IllegalStateException("MxAtlas is not initialized!");
         }
         return instance;
+    }
+
+    public static void init(JavaPlugin plugin) {
+        if(instance != null) {
+            throw new IllegalStateException("MxAtlas is already initialized!");
+        }
+        else {
+            instance = new MxAtlas(plugin);
+        }
     }
 
     public Optional<MxWorld> getMxWorld(String name) {

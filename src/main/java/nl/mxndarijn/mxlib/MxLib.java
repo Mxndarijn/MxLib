@@ -13,6 +13,7 @@ import nl.mxndarijn.mxlib.logger.LogLevel;
 import nl.mxndarijn.mxlib.logger.Logger;
 import nl.mxndarijn.mxlib.logger.PrefixRegistry;
 import nl.mxndarijn.mxlib.logger.StandardPrefix;
+import nl.mxndarijn.mxlib.mxworld.MxAtlas;
 import nl.mxndarijn.mxlib.permission.PermissionService;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -25,6 +26,7 @@ public class MxLib {
         plugin = p;
         Logger.logMessage(LogLevel.INFORMATION, "Loading MxLib...");
         ConfigService.init(plugin);
+        MxAtlas.init(plugin);
         LanguageManager.getInstance();
         MxChatInputManager.init(plugin);
         ChatPrefixManager.getInstance();
