@@ -13,8 +13,6 @@ public enum LogLevel {
     DEBUG("Debug", 5, "gray");
 
     @Getter
-    private final String prefix;
-    @Getter
     private final int level;
     @Getter
     private final String name;
@@ -24,7 +22,6 @@ public enum LogLevel {
         this.level = level;
         this.name = logName;
         this.color = color;
-        this.prefix = Logger.getPrefix() + "-" + "<" + this.color + ">" + logName + "<dark_gray>] <yellow>» ";
     }
 
     public static Optional<LogLevel> getLevelByInt(int i) {
@@ -34,6 +31,10 @@ public enum LogLevel {
             }
         }
         return Optional.empty();
+    }
+
+    public String getPrefix() {
+        return Logger.getPrefix() + "-" + "<" + this.color + ">" + this.name + "<dark_gray>] <yellow>» ";
     }
 
 }
