@@ -27,25 +27,22 @@ public abstract class MxCommand implements CommandExecutor {
 
     private final PermissionType permission;
     private final boolean onlyPlayersCanExecute;
-    /** kept for backwards compatibility; no built-in logic attached */
-    private final boolean gameConstraintFlagIgnored;
     private final MxWorldFilter worldFilter;
 
     private final LanguageManager languageManager;
     private final ChatPrefixManager chatPrefixManager;
 
-    public MxCommand(PermissionType permission, boolean onlyPlayersCanExecute, boolean canBeExecutedInGame, MxWorldFilter worldFilter) {
+    public MxCommand(PermissionType permission, boolean onlyPlayersCanExecute, MxWorldFilter worldFilter) {
         this.permission = permission;
         this.onlyPlayersCanExecute = onlyPlayersCanExecute;
-        this.gameConstraintFlagIgnored = canBeExecutedInGame; // intentionally unused in the base class
         this.worldFilter = worldFilter;
 
         this.languageManager = LanguageManager.getInstance();
         this.chatPrefixManager = ChatPrefixManager.getInstance();
     }
 
-    public MxCommand(PermissionType permission, boolean onlyPlayersCanExecute, boolean canBeExecutedInGame) {
-        this(permission, onlyPlayersCanExecute, canBeExecutedInGame, null);
+    public MxCommand(PermissionType permission, boolean onlyPlayersCanExecute) {
+        this(permission, onlyPlayersCanExecute, null);
     }
 
     @Override

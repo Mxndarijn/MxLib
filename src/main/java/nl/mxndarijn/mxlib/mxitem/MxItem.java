@@ -35,15 +35,13 @@ public abstract class MxItem implements Listener {
 
     public final JavaPlugin plugin;
     private final ItemStack is;
-    private final MxWorldFilter worldFilter; // reserved for consumers if needed
+    private final MxWorldFilter worldFilter;
     private final LanguageManager languageManager;
-    private final boolean gameItemFlagIgnored; // retained for ctor compatibility, no logic attached
     private final Action[] actions;
 
     public MxItem(ItemStack is, MxWorldFilter worldFilter, boolean gameItem, Action... actions) {
         this.is = is;
         this.worldFilter = worldFilter;
-        this.gameItemFlagIgnored = gameItem; // intentionally unused in base class
         this.languageManager = LanguageManager.getInstance();
         this.actions = actions;
 
@@ -77,8 +75,19 @@ public abstract class MxItem implements Listener {
 
         // Generic, overridable policy hook
         if (!canExecuteInteract(p, used, e)) {
-            e.setCancelled(true);
             return;
+        }
+
+        // World filter (generic)
+        if (worldFilter != null) {
+            if (!worldFilter.isPlayerInCorrectWorld(p)) {
+                MessageUtil.sendMessageToPlayer(p,
+                        languageManager.getLanguageString(
+                                StandardLanguageText.NOT_CORRECT_WORLD,
+                                Collections.emptyList(),
+                                ChatPrefixManager.getInstance().requireFind(StandardChatPrefix.DEFAULT)));
+                return;
+            }
         }
 
         try {
@@ -100,7 +109,7 @@ public abstract class MxItem implements Listener {
         Player p = e.getPlayer();
 
         ItemStack inHand = p.getInventory().getItemInMainHand();
-        if (inHand == null || !inHand.hasItemMeta() || inHand.getType() == Material.AIR) return;
+        if (!inHand.hasItemMeta() || inHand.getType() == Material.AIR) return;
 
         if (!InventoryManager.validateItem(inHand, is)) return;
 
@@ -108,6 +117,17 @@ public abstract class MxItem implements Listener {
         if (!canExecuteBreak(p, inHand, e)) {
             e.setCancelled(true);
             return;
+        }
+
+        if (worldFilter != null) {
+            if (!worldFilter.isPlayerInCorrectWorld(p)) {
+                MessageUtil.sendMessageToPlayer(p,
+                        languageManager.getLanguageString(
+                                StandardLanguageText.NOT_CORRECT_WORLD,
+                                Collections.emptyList(),
+                                ChatPrefixManager.getInstance().requireFind(StandardChatPrefix.DEFAULT)));
+                return;
+            }
         }
 
         try {

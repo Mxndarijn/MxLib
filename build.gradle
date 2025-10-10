@@ -52,6 +52,11 @@ java {
     withJavadocJar()
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.release.set(22)
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
