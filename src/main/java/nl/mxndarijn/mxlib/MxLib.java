@@ -16,9 +16,9 @@ public class MxLib {
 
     public static void init(JavaPlugin p, String permissionPrefix) {
         plugin = p;
+        ConfigService.init(plugin);
         ChatPrefixManager.getInstance();
         PrefixRegistry.registerAll(StandardPrefix.class);
-        ConfigService.init(plugin);
         ConfigService.getInstance().registerAll(StandardConfigFile.class);
         PermissionService.init(permissionPrefix);
         MxInventoryManager.init(plugin);
