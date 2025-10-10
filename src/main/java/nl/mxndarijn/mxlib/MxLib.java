@@ -1,6 +1,7 @@
 package nl.mxndarijn.mxlib;
 
 import lombok.Getter;
+import nl.mxndarijn.mxlib.changeworld.ChangeWorldManager;
 import nl.mxndarijn.mxlib.chatprefix.ChatPrefixManager;
 import nl.mxndarijn.mxlib.configfiles.ConfigService;
 import nl.mxndarijn.mxlib.configfiles.StandardConfigFile;
@@ -23,5 +24,6 @@ public class MxLib {
         ConfigService.getInstance().registerAll(StandardConfigFile.class);
         PermissionService.init(permissionPrefix);
         MxInventoryManager.init(plugin);
+        ChangeWorldManager.init(plugin);
     }
 }
