@@ -23,8 +23,4 @@ public class MxLib {
         PermissionService.init(permissionPrefix);
         MxInventoryManager.init(plugin);
     }
-
-    public static void main(String[] args) {
-        System.out.println("MxLib");
-    }
 }
