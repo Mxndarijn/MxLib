@@ -24,7 +24,7 @@ public enum LogLevel {
         this.level = level;
         this.name = logName;
         this.color = color;
-        this.prefix = Logger.getMainWieIsDeMolPrefix() + "-" + "<" + this.color + ">" + logName + "<dark_gray>] <yellow>» ";
+        this.prefix = Logger.getPrefix() + "-" + "<" + this.color + ">" + logName + "<dark_gray>] <yellow>» ";
     }
 
     public static Optional<LogLevel> getLevelByInt(int i) {

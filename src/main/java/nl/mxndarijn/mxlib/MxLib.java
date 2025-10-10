@@ -22,8 +22,9 @@ public class MxLib {
     private static JavaPlugin plugin;
 
 
-    public static void init(JavaPlugin p, String permissionPrefix) {
+    public static void init(JavaPlugin p, String permissionPrefix, String loggerPrefix) {
         plugin = p;
+        Logger.setMainPrefix(loggerPrefix);
         Logger.logMessage(LogLevel.INFORMATION, "Loading MxLib...");
         ConfigService.init(plugin);
         MxAtlas.init(plugin);

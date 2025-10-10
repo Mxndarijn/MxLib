@@ -68,8 +68,7 @@ public abstract class MxCommand implements CommandExecutor {
         }
 
         // World filter (generic)
-        if (sender instanceof Player && worldFilter != null) {
-            Player player = (Player) sender;
+        if (sender instanceof Player player && worldFilter != null) {
             if (!worldFilter.isPlayerInCorrectWorld(player)) {
                 MessageUtil.sendMessageToPlayer(sender,
                         languageManager.getLanguageString(

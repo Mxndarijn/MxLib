@@ -1,5 +1,6 @@
 package nl.mxndarijn.mxlib.logger;
 
+import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -7,9 +8,11 @@ import org.bukkit.Bukkit;
 public class Logger {
     @Setter
     private static LogLevel logLevel = LogLevel.DEBUG;
+    @Getter
+    private static String prefix = "<dark_gray>[<gold>MxLib";
 
-    public static String getMainWieIsDeMolPrefix() {
-        return "<dark_gray>[<gold>WIDM";
+    public static void setMainPrefix(String prefix) {
+        prefix = prefix;
     }
 
     public static void logMessage(LogLevel level, String message) {
