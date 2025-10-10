@@ -137,6 +137,9 @@ public class MxHeadSection {
     public Optional<String> getValueOptional() {
         return Optional.ofNullable(value);
     }
+    public Optional<String> getNameOptional() {
+        return Optional.ofNullable(name);
+    }
 
     /** Optional view for nullable lastRefreshed. */
     public Optional<LocalDateTime> getLastRefreshedOptional() {
