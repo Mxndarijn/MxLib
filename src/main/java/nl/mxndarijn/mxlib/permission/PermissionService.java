@@ -3,7 +3,8 @@ package nl.mxndarijn.mxlib.permission;
 import nl.mxndarijn.mxlib.logger.LogLevel;
 import nl.mxndarijn.mxlib.logger.Logger;
 import nl.mxndarijn.mxlib.logger.StandardPrefix;
-import nl.mxndarijn.mxlib.permission.PermissionType;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,7 +13,6 @@ public final class PermissionService {
 
     private static PermissionService instance;
 
-    private final Map<String, String> permissions = new ConcurrentHashMap<>();
     private String basePrefix = "default-prefix";
 
     private PermissionService() {}
@@ -29,33 +29,19 @@ public final class PermissionService {
         }
     }
 
-    public static PermissionService get() {
+    public static PermissionService getInstance() {
         if (instance == null)
             throw new IllegalStateException("PermissionService not intialized!");
         return instance;
     }
 
-    public <E extends Enum<E> & PermissionType> void registerAll(Class<E> enumClass) {
-        for (E perm : enumClass.getEnumConstants()) {
-            register(perm);
-        }
-    }
-    public void register(PermissionType permission) {
-        String fullNode = buildFull(permission.node());
-        permissions.put(permission.node(), fullNode);
-    }
-
     private String buildFull(String node) {
         if (node == null || node.isEmpty()) return basePrefix;
-        if (node.startsWith(basePrefix + ".")) return node; // dubbel prefix vermijden
+        if (node.startsWith(basePrefix + ".")) return node;
         return basePrefix + "." + node;
     }
 
-    public String getFull(PermissionType permission) {
-        return permissions.getOrDefault(permission.node(), buildFull(permission.node()));
-    }
-
-    public Collection<String> all() {
-        return Collections.unmodifiableCollection(permissions.values());
+    public boolean hasPlayerPermission(Player player, PermissionType permission) {
+        return player.hasPermission(buildFull(permission.node()));
     }
 }

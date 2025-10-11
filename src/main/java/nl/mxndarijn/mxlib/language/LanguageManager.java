@@ -150,6 +150,9 @@ public final class LanguageManager {
                     path + " has no default value; please add it to the language resources.");
         }
 
+        // Write directly into the live configuration so it's immediately available without restart
+        languageConfig.set(path, value);
+        // Also keep it as a default so future merges preserve it
         languageConfig.addDefault(path, value);
         languageConfig.options().copyDefaults(true);
         try {

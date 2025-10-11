@@ -11,8 +11,8 @@ public class Logger {
     @Getter
     private static String prefix = "<dark_gray>[<gold>MxLib";
 
-    public static void setMainPrefix(String prefix) {
-        prefix = prefix;
+    public static void setMainPrefix(String p) {
+        prefix = p;
     }
 
     public static void logMessage(LogLevel level, String message) {
