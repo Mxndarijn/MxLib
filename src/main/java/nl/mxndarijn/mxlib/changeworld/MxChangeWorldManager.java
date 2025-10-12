@@ -2,6 +2,8 @@ package nl.mxndarijn.mxlib.changeworld;
 import nl.mxndarijn.mxlib.logger.LogLevel;
 import nl.mxndarijn.mxlib.logger.Logger;
 import nl.mxndarijn.mxlib.logger.StandardPrefix;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -13,13 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class ChangeWorldManager implements Listener {
+public class MxChangeWorldManager implements Listener {
 
-    private static ChangeWorldManager instance;
+    private static MxChangeWorldManager instance;
 
     private final HashMap<UUID, List<MxChangeWorld>> worlds;
+    private final List<MxChangeWorld> unspecificWorlds = new ArrayList<>();
 
-    private ChangeWorldManager(JavaPlugin plugin) {
+    private MxChangeWorldManager(JavaPlugin plugin) {
         Logger.logMessage(LogLevel.DEBUG, StandardPrefix.CHANGEWORLD_MANAGER, "Loading...");
         worlds = new HashMap<>();
 
@@ -28,10 +31,10 @@ public class ChangeWorldManager implements Listener {
     }
 
     public static void init(JavaPlugin plugin) {
-        instance = new ChangeWorldManager(plugin);
+        instance = new MxChangeWorldManager(plugin);
     }
 
-    public static ChangeWorldManager getInstance() {
+    public static MxChangeWorldManager getInstance() {
         if (instance == null) {
             throw new IllegalStateException("ChangeWorldManager is not initialized!");
         }
@@ -42,7 +45,12 @@ public class ChangeWorldManager implements Listener {
     public void changeWorld(PlayerChangedWorldEvent e) {
         UUID from = e.getFrom().getUID();
         UUID to = e.getPlayer().getWorld().getUID();
-        if (from != to) {
+        World toWorld = Bukkit.getWorld(to);
+        if (!from.equals(to)) {
+            unspecificWorlds.forEach(mxChangeWorld -> {
+                mxChangeWorld.leave(e.getPlayer(), e.getFrom(), e);
+                mxChangeWorld.enter(e.getPlayer(), toWorld, e);
+            });
             if (worlds.containsKey(from)) {
                 worlds.get(from).forEach(mxChangeWorld -> mxChangeWorld.leave(e.getPlayer(), e.getFrom(), e));
             } else {
@@ -50,7 +58,7 @@ public class ChangeWorldManager implements Listener {
             }
         }
         if (worlds.containsKey(to)) {
-            worlds.get(to).forEach(mxChangeWorld -> mxChangeWorld.enter(e.getPlayer(), e.getFrom(), e));
+            worlds.get(to).forEach(mxChangeWorld -> mxChangeWorld.enter(e.getPlayer(), toWorld, e));
         } else {
             Logger.logMessage(LogLevel.DEBUG, StandardPrefix.CHANGEWORLD_MANAGER, "World: " + e.getPlayer().getWorld().getName() + " not found (going to this world). (" + e.getPlayer().getName() + ")");
         }
@@ -70,6 +78,10 @@ public class ChangeWorldManager implements Listener {
         List<MxChangeWorld> list = worlds.containsKey(uid) ? worlds.get(uid) : new ArrayList<>();
         list.add(changeWorld);
         worlds.put(uid, list);
+    }
+
+    public void addUnspecificWorld(MxChangeWorld changeWorld) {
+        unspecificWorlds.add(changeWorld);
     }
 
     public void removeWorld(UUID uid) {

@@ -3,11 +3,8 @@ package nl.mxndarijn.mxlib.permission;
 import nl.mxndarijn.mxlib.logger.LogLevel;
 import nl.mxndarijn.mxlib.logger.Logger;
 import nl.mxndarijn.mxlib.logger.StandardPrefix;
-import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public final class PermissionService {
 
@@ -41,7 +38,11 @@ public final class PermissionService {
         return basePrefix + "." + node;
     }
 
-    public boolean hasPlayerPermission(Player player, PermissionType permission) {
+    public boolean hasSenderPermission(Player player, PermissionType permission) {
         return player.hasPermission(buildFull(permission.node()));
+    }
+
+    public boolean hasSenderPermission(CommandSender sender, PermissionType permission) {
+        return sender.hasPermission(buildFull(permission.node()));
     }
 }
