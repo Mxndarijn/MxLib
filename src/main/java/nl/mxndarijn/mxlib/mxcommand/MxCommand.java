@@ -7,7 +7,7 @@ import nl.mxndarijn.mxlib.language.StandardLanguageText;
 import nl.mxndarijn.mxlib.logger.LogLevel;
 import nl.mxndarijn.mxlib.logger.Logger;
 import nl.mxndarijn.mxlib.logger.StandardPrefix;
-import nl.mxndarijn.mxlib.permission.PermissionService;
+import nl.mxndarijn.mxlib.permission.MxPermissionService;
 import nl.mxndarijn.mxlib.permission.PermissionType;
 import nl.mxndarijn.mxlib.util.MessageUtil;
 import nl.mxndarijn.mxlib.util.MxWorldFilter;
@@ -109,7 +109,7 @@ public abstract class MxCommand implements CommandExecutor {
      * Overridable permission check. Defaults to Bukkit permission node from {@link PermissionType}.
      */
     protected boolean hasPermission(CommandSender sender) {
-        return PermissionService.getInstance().hasSenderPermission(sender, permission);
+        return MxPermissionService.getInstance().hasSenderPermission(sender, permission);
     }
 
     /**

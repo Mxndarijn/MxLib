@@ -6,17 +6,17 @@ import nl.mxndarijn.mxlib.logger.StandardPrefix;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public final class PermissionService {
+public final class MxPermissionService {
 
-    private static PermissionService instance;
+    private static MxPermissionService instance;
 
     private String basePrefix = "default-prefix";
 
-    private PermissionService() {}
+    private MxPermissionService() {}
 
     public static void init(String prefix) {
         if (instance == null) {
-            instance = new PermissionService();
+            instance = new MxPermissionService();
             instance.basePrefix = prefix;
             Logger.logMessage(LogLevel.DEBUG, StandardPrefix.PERMISSION_SERVICE,
                     "PermissionService initialized with prefix: " + prefix);
@@ -26,7 +26,7 @@ public final class PermissionService {
         }
     }
 
-    public static PermissionService getInstance() {
+    public static MxPermissionService getInstance() {
         if (instance == null)
             throw new IllegalStateException("PermissionService not intialized!");
         return instance;
@@ -38,7 +38,7 @@ public final class PermissionService {
         return basePrefix + "." + node;
     }
 
-    public boolean hasSenderPermission(Player player, PermissionType permission) {
+    public boolean hasPlayerPermission(Player player, PermissionType permission) {
         return player.hasPermission(buildFull(permission.node()));
     }
 

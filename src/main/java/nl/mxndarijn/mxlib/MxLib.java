@@ -13,7 +13,7 @@ import nl.mxndarijn.mxlib.logger.Logger;
 import nl.mxndarijn.mxlib.logger.PrefixRegistry;
 import nl.mxndarijn.mxlib.logger.StandardPrefix;
 import nl.mxndarijn.mxlib.mxworld.MxAtlas;
-import nl.mxndarijn.mxlib.permission.PermissionService;
+import nl.mxndarijn.mxlib.permission.MxPermissionService;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MxLib {
@@ -32,7 +32,7 @@ public class MxLib {
         ChatPrefixManager.getInstance();
         PrefixRegistry.registerAll(StandardPrefix.class);
         ConfigService.getInstance().registerAll(StandardConfigFile.class);
-        PermissionService.init(permissionPrefix);
+        MxPermissionService.init(permissionPrefix);
         MxInventoryManager.init(plugin);
         MxChangeWorldManager.init(plugin);
         Logger.logMessage(LogLevel.INFORMATION, "MxLib Loaded.");
