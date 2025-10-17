@@ -40,6 +40,11 @@ public class MxItemStackBuilder<T extends MxItemStackBuilder<T>> {
         return (T) this;
     }
 
+    public T addLores(List<String> newLores) {
+        lores.addAll(newLores);
+        return (T) this;
+    }
+
     public T addBlankLore() {
         lores.add(" ");
         return (T) this;
