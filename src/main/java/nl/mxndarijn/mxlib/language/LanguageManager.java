@@ -97,16 +97,14 @@ public final class LanguageManager {
      */
     public String getLanguageString(LanguageKey key, List<String> placeholders) {
         final String path = key.key();
-        ensureAvailability(path);
+        String text = ensureAvailability(path); // now returns the actual ensured string
 
-        String text = languageConfig.getString(path, "LANGUAGE_NOT_FOUND");
-
-        // Log an error if the requested language entry was not found, including the looked-up key
         if ("LANGUAGE_NOT_FOUND".equals(text)) {
             Logger.logMessage(LogLevel.ERROR, StandardPrefix.LANGUAGE_MANAGER,
                     "Language entry not found for key: '" + path + "'");
         }
 
+        // apply placeholders
         if (placeholders != null && !placeholders.isEmpty()) {
             for (int i = 0; i < placeholders.size(); i++) {
                 text = text.replace("%%" + (i + 1) + "%%", placeholders.get(i));
@@ -114,6 +112,7 @@ public final class LanguageManager {
         }
         return text;
     }
+
 
     /** Convenience overload without placeholders. */
     public String getLanguageString(LanguageKey key) {
@@ -135,8 +134,10 @@ public final class LanguageManager {
     // -------------------------------------------------------------------------
 
     /** Ensures a key exists in the active file; if missing, populate from embedded defaults or mark as not found. */
-    private void ensureAvailability(String path) {
-        if (languageConfig.contains(path)) return;
+    private String ensureAvailability(String path) {
+        if (languageConfig.contains(path)) {
+            return languageConfig.getString(path);
+        }
 
         final JavaPlugin plugin = MxLib.getPlugin();
         final String defaultRes = "languages/" + StandardConfigFile.DEFAULT_LANGUAGE.fileName();
@@ -150,9 +151,7 @@ public final class LanguageManager {
                     path + " has no default value; please add it to the language resources.");
         }
 
-        // Write directly into the live configuration so it's immediately available without restart
         languageConfig.set(path, value);
-        // Also keep it as a default so future merges preserve it
         languageConfig.addDefault(path, value);
         languageConfig.options().copyDefaults(true);
         try {
@@ -161,7 +160,10 @@ public final class LanguageManager {
             Logger.logMessage(LogLevel.ERROR, StandardPrefix.LANGUAGE_MANAGER,
                     "Could not save language file: " + e.getMessage());
         }
+
+        return value;
     }
+
 
     /** Merges defaults from selected and base default resource files into the active configuration. */
     private void mergeDefaults(JavaPlugin plugin, String selectedFileName, String defaultFileName) {
