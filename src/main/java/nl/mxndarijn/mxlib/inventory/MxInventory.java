@@ -1,6 +1,7 @@
 package nl.mxndarijn.mxlib.inventory;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
@@ -12,7 +13,8 @@ public class MxInventory {
     private final String name;
     private final boolean delete;
     private final boolean cancelEvent;
-    private final boolean canBeClosed;
+    @Setter
+    private boolean canBeClosed;
 
     private final MxOnInventoryCloseEvent closeEvent;
 
