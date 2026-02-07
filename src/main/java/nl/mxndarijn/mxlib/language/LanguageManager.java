@@ -104,6 +104,8 @@ public final class LanguageManager {
                     "Language entry not found for key: '" + path + "'");
         }
 
+        text = "<gray>LANGUAGE_NOT_FOUND (" + path +")";
+
         // apply placeholders
         if (placeholders != null && !placeholders.isEmpty()) {
             for (int i = 0; i < placeholders.size(); i++) {

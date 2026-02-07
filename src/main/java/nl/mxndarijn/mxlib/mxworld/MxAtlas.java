@@ -117,11 +117,24 @@ public class MxAtlas {
             Logger.logMessage(LogLevel.DEBUG, StandardPrefix.MXATLAS, "Loading worldsettings.yml... ");
             FileConfiguration worldSettingsCfg = YamlConfiguration.loadConfiguration(worldSettings);
             world.setAutoSave(worldSettingsCfg.getBoolean("autosave"));
-            world.setKeepSpawnInMemory(worldSettingsCfg.getBoolean("keepSpawnInMemory"));
+            ConfigurationSection sc = worldSettingsCfg.getConfigurationSection("spawn_chunks");
+            int radius = (sc != null) ? sc.getInt("force_loaded_radius_chunks", 0) : 0;
 
-            worldSettingsCfg.getConfigurationSection("gamerules").getKeys(false).forEach(val -> {
-                world.setGameRuleValue(val, worldSettingsCfg.getConfigurationSection("gamerules").get(val).toString());
-            });
+            if (radius > 0) {
+                var spawnLoc = world.getSpawnLocation();
+                int centerX = spawnLoc.getBlockX() >> 4;
+                int centerZ = spawnLoc.getBlockZ() >> 4;
+
+                for (int dx = -radius; dx <= radius; dx++) {
+                    for (int dz = -radius; dz <= radius; dz++) {
+                        world.setChunkForceLoaded(centerX + dx, centerZ + dz, true);
+                    }
+                }
+            }
+
+            ConfigurationSection gamerules = worldSettingsCfg.getConfigurationSection("gamerules");
+            GameRuleUtil.applyGameRules(world, gamerules);
+
             ConfigurationSection spawn = worldSettingsCfg.getConfigurationSection("spawn");
             if (spawn != null) {
                 Logger.logMessage(LogLevel.DEBUG, StandardPrefix.MXATLAS, "Setting spawnlocation... ");
