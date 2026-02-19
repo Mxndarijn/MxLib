@@ -15,23 +15,28 @@ public final class GameRuleUtil {
         if (gamerulesSection == null) return;
 
         for (String keyStr : gamerulesSection.getKeys(false)) {
-            Object raw = gamerulesSection.get(keyStr);
-            if (raw == null) continue;
+            try {
+                Object raw = gamerulesSection.get(keyStr);
+                if (raw == null) continue;
 
-            NamespacedKey key = toNamespacedKey(keyStr);
-            GameRule<?> rule = Registry.GAME_RULE.get(key); // registry lookup
-            if (rule == null) {
-                Logger.logMessage(LogLevel.WARNING, StandardPrefix.MXATLAS, "Unknown GameRule: " + keyStr);
-                continue;
-            }
+                NamespacedKey key = toNamespacedKey(keyStr);
+                GameRule<?> rule = Registry.GAME_RULE.get(key); // registry lookup
+                if (rule == null) {
+                    Logger.logMessage(LogLevel.WARNING, StandardPrefix.MXATLAS, "Unknown GameRule: " + keyStr);
+                    continue;
+                }
 
-            Class<?> type = rule.getType(); // Boolean of Integer
-            if (type == Boolean.class) {
-                boolean val = (raw instanceof Boolean b) ? b : Boolean.parseBoolean(raw.toString());
-                set(world, (GameRule<Boolean>) rule, val);
-            } else if (type == Integer.class) {
-                int val = (raw instanceof Number n) ? n.intValue() : Integer.parseInt(raw.toString());
-                set(world, (GameRule<Integer>) rule, val);
+                Class<?> type = rule.getType(); // Boolean of Integer
+                if (type == Boolean.class) {
+                    boolean val = (raw instanceof Boolean b) ? b : Boolean.parseBoolean(raw.toString());
+                    set(world, (GameRule<Boolean>) rule, val);
+                } else if (type == Integer.class) {
+                    int val = (raw instanceof Number n) ? n.intValue() : Integer.parseInt(raw.toString());
+                    set(world, (GameRule<Integer>) rule, val);
+                }
+            } catch (IllegalArgumentException e) {
+                Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXATLAS, "Invalid GameRule: " + keyStr);
+                e.printStackTrace();
             }
         }
     }

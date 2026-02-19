@@ -116,7 +116,7 @@ public class MxAtlas {
             }
             Logger.logMessage(LogLevel.DEBUG, StandardPrefix.MXATLAS, "Loading worldsettings.yml... ");
             FileConfiguration worldSettingsCfg = YamlConfiguration.loadConfiguration(worldSettings);
-            world.setAutoSave(worldSettingsCfg.getBoolean("autosave"));
+            world.setAutoSave(worldSettingsCfg.getBoolean("autosave", false));
             ConfigurationSection sc = worldSettingsCfg.getConfigurationSection("spawn_chunks");
             int radius = (sc != null) ? sc.getInt("force_loaded_radius_chunks", 0) : 0;
 
