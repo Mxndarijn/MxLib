@@ -102,9 +102,9 @@ public final class LanguageManager {
         if ("LANGUAGE_NOT_FOUND".equals(text)) {
             Logger.logMessage(LogLevel.ERROR, StandardPrefix.LANGUAGE_MANAGER,
                     "Language entry not found for key: '" + path + "'");
+            text = "<gray>LANGUAGE_NOT_FOUND (" + path + ")";
         }
 
-        text = "<gray>LANGUAGE_NOT_FOUND (" + path +")";
 
         // apply placeholders
         if (placeholders != null && !placeholders.isEmpty()) {
