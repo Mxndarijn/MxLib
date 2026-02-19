@@ -37,7 +37,7 @@ public class MxChatInputManager implements Listener {
         return instance;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void chatEvent(AsyncChatEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
         if (map.containsKey(uuid)) {
