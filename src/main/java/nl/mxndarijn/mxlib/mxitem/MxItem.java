@@ -3,7 +3,6 @@ package nl.mxndarijn.mxlib.mxitem;
 import nl.mxndarijn.mxlib.MxLib;
 import nl.mxndarijn.mxlib.chatprefix.ChatPrefixManager;
 import nl.mxndarijn.mxlib.chatprefix.StandardChatPrefix;
-import nl.mxndarijn.mxlib.inventory.saver.InventoryManager;
 import nl.mxndarijn.mxlib.language.LanguageManager;
 import nl.mxndarijn.mxlib.language.StandardLanguageText;
 import nl.mxndarijn.mxlib.logger.LogLevel;
@@ -13,6 +12,7 @@ import nl.mxndarijn.mxlib.util.Functions;
 import nl.mxndarijn.mxlib.util.MessageUtil;
 import nl.mxndarijn.mxlib.util.MxWorldFilter;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,6 +22,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
@@ -37,19 +40,30 @@ import java.util.Collections;
  */
 public abstract class MxItem<T extends MxItemContext> implements Listener {
 
+    /** The PDC key used to store the unique item tag. */
+    public static final String TAG_KEY = "mxitem_id";
+
     public final JavaPlugin plugin;
     private final ItemStack is;
     private final MxWorldFilter worldFilter;
     private final LanguageManager languageManager;
     private final Action[] actions;
+    private final String itemTag;
+    private final NamespacedKey namespacedKey;
 
     public MxItem(ItemStack is, MxWorldFilter worldFilter, Action... actions) {
-        this.is = is;
         this.worldFilter = worldFilter;
         this.languageManager = LanguageManager.getInstance();
         this.actions = actions;
 
         this.plugin = MxLib.getPlugin();
+        this.namespacedKey = new NamespacedKey(this.plugin, TAG_KEY);
+
+        // Stamp a stable, class-derived tag onto the item so we can identify it by tag, not by type/name.
+        // Using the fully-qualified class name ensures the tag is unique per subclass and persistent across restarts.
+        this.itemTag = this.getClass().getName();
+        this.is = is;
+
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
 
         // Subscribe to the separate interact pipeline instead of relying on ignoreCancelled,
@@ -57,16 +71,11 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
         MxInteractPipeline.getInstance().subscribe(this::handleMxInteract, MxInteractPriority.HIGH);
     }
 
-    /** Compares by type and display name (if present). */
+    /** Compares by the unique MxItem tag stored in the item's PersistentDataContainer. */
     public boolean isItemTheSame(ItemStack item) {
         if (item == null || item.getType() == Material.AIR || item.getItemMeta() == null) return false;
-        if (item.getType() != is.getType()) return false;
-
-        if (is.getItemMeta().hasDisplayName() && item.getItemMeta().hasDisplayName()) {
-            return Functions.convertComponentToString(item.getItemMeta().displayName())
-                    .equalsIgnoreCase(Functions.convertComponentToString(is.getItemMeta().displayName()));
-        }
-        return !is.getItemMeta().hasDisplayName();
+        PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
+        return itemTag.equals(pdc.get(namespacedKey, PersistentDataType.STRING));
     }
 
     /**
@@ -85,7 +94,7 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
 
         Player p = e.getPlayer();
 
-        if (!InventoryManager.validateItem(used, is)) return;
+        if (!isItemTheSame(used)) return;
 
         T context = createContext();
 
@@ -118,7 +127,7 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
         ItemStack inHand = p.getInventory().getItemInMainHand();
         if (!inHand.hasItemMeta() || inHand.getType() == Material.AIR) return;
 
-        if (!InventoryManager.validateItem(inHand, is)) return;
+        if (!isItemTheSame(inHand)) return;
 
         // Generic, overridable policy hook
         if (!canPlaceItem(p, inHand, e)) {
@@ -133,7 +142,7 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
         ItemStack inHand = p.getInventory().getItemInMainHand();
         if (!inHand.hasItemMeta() || inHand.getType() == Material.AIR) return;
 
-        if (!InventoryManager.validateItem(inHand, is)) return;
+        if (!isItemTheSame(inHand)) return;
 
         // Generic, overridable policy hook
         if (!canExecuteBreak(p, inHand, e)) {
