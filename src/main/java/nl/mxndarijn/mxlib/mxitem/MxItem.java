@@ -31,7 +31,7 @@ import java.util.Collections;
  * Projects can subclass and override {@link #canExecute(Player, ItemStack)}
  * or the event-specific variants to enforce custom rules.
  */
-public abstract class MxItem implements Listener {
+public abstract class MxItem<T extends MxItemContext> implements Listener {
 
     public final JavaPlugin plugin;
     private final ItemStack is;
@@ -74,24 +74,15 @@ public abstract class MxItem implements Listener {
         if (!InventoryManager.validateItem(used, is)) return;
 
         // Generic, overridable policy hook
-        if (!canExecuteInteract(p, used, e)) {
+
+        T context = createContext();
+
+        if (!canExecuteInteract(p, used, e, context)) {
             return;
         }
 
-        // World filter (generic)
-//        if (worldFilter != null) {
-//            if (!worldFilter.isPlayerInCorrectWorld(p)) {
-//                MessageUtil.sendMessageToPlayer(p,
-//                        languageManager.getLanguageString(
-//                                StandardLanguageText.NOT_CORRECT_WORLD,
-//                                Collections.emptyList(),
-//                                ChatPrefixManager.getInstance().requireFind(StandardChatPrefix.DEFAULT)));
-//                return;
-//            }
-//        }
-
         try {
-            execute(p, e);
+            execute(p, e, context);
         } catch (Exception ex) {
             Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXITEM,
                     "Could not execute item: " + Functions.convertComponentToString(is.getItemMeta().displayName()));
@@ -156,7 +147,7 @@ public abstract class MxItem implements Listener {
      * Event-specific hook for interact events.
      * Default delegates to {@link #canExecute(Player, ItemStack)}.
      */
-    protected boolean canExecuteInteract(Player player, ItemStack item, PlayerInteractEvent event) {
+    protected boolean canExecuteInteract(Player player, ItemStack item, PlayerInteractEvent event, T context) {
         return canExecute(player, item);
     }
 
@@ -168,7 +159,9 @@ public abstract class MxItem implements Listener {
         return canExecute(player, item);
     }
 
-    public abstract void execute(Player p, PlayerInteractEvent e);
+    public abstract void execute(Player p, PlayerInteractEvent e, T context);
 
     public abstract void executeOnBreak(Player p, BlockBreakEvent e);
+
+    public abstract T createContext();
 }
