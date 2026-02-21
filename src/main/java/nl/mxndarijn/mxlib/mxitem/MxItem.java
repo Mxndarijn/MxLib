@@ -64,6 +64,21 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
         this.itemTag = this.getClass().getName();
         this.is = is;
 
+        // Check if the item already has the tag; if not, log an error and stamp it now.
+        ItemMeta meta = is.getItemMeta();
+        if (meta == null) {
+            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXITEM,
+                    "ItemStack has no ItemMeta — cannot stamp MxItem tag for: " + this.getClass().getName());
+        } else {
+            PersistentDataContainer pdc = meta.getPersistentDataContainer();
+            if (!pdc.has(namespacedKey, PersistentDataType.STRING)) {
+                Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXITEM,
+                        "ItemStack is missing MxItem tag, stamping it now for: " + this.getClass().getName());
+                pdc.set(namespacedKey, PersistentDataType.STRING, this.itemTag);
+                is.setItemMeta(meta);
+            }
+        }
+
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
 
         // Subscribe to the separate interact pipeline instead of relying on ignoreCancelled,
