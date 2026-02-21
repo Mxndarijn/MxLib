@@ -15,7 +15,6 @@ import nl.mxndarijn.mxlib.util.MxWorldFilter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -32,6 +31,9 @@ import java.util.Collections;
  * Base item with generic policy hooks for execution control.
  * Projects can subclass and override {@link #canExecute(Player, ItemStack)}
  * or the event-specific variants to enforce custom rules.
+ *
+ * <p>Interact events are handled via {@link MxInteractPipeline} so that
+ * right-clicking air (which the server auto-cancels) is still processed correctly.
  */
 public abstract class MxItem<T extends MxItemContext> implements Listener {
 
@@ -49,6 +51,10 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
 
         this.plugin = MxLib.getPlugin();
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+
+        // Subscribe to the separate interact pipeline instead of relying on ignoreCancelled,
+        // because right-clicking air is auto-cancelled by the server.
+        MxInteractPipeline.getInstance().subscribe(this::handleMxInteract, MxInteractPriority.HIGH);
     }
 
     /** Compares by type and display name (if present). */
@@ -63,8 +69,15 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
         return !is.getItemMeta().hasDisplayName();
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void interact(PlayerInteractEvent e) {
+    /**
+     * Called by {@link MxInteractPipeline} for every {@link PlayerInteractEvent},
+     * regardless of whether Bukkit has already cancelled it.
+     */
+    private void handleMxInteract(MxPlayerInteractEvent mxEvent) {
+        if (mxEvent.isCancelled()) return;
+
+        PlayerInteractEvent e = mxEvent.getBukkitEvent();
+
         Logger.logMessage(LogLevel.DEBUG, "running item");
         if (Arrays.stream(actions).noneMatch(a -> a == e.getAction())) return;
         if (e.getHand() != EquipmentSlot.HAND) return;
@@ -76,11 +89,10 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
 
         if (!InventoryManager.validateItem(used, is)) return;
 
-        // Generic, overridable policy hook
-
         T context = createContext();
 
         if (!canExecuteInteract(p, used, e, context)) {
+            mxEvent.setCancelled(true);
             return;
         }
 
