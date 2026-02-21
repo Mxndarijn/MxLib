@@ -15,6 +15,7 @@ import nl.mxndarijn.mxlib.util.MxWorldFilter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -62,7 +63,7 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
         return !is.getItemMeta().hasDisplayName();
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void interact(PlayerInteractEvent e) {
         if (Arrays.stream(actions).noneMatch(a -> a == e.getAction())) return;
         if (e.getHand() != EquipmentSlot.HAND) return;
