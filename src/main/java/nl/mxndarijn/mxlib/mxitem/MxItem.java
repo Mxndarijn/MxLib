@@ -77,8 +77,6 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
         if (mxEvent.isCancelled()) return;
 
         PlayerInteractEvent e = mxEvent.getBukkitEvent();
-
-        Logger.logMessage(LogLevel.DEBUG, "running item");
         if (Arrays.stream(actions).noneMatch(a -> a == e.getAction())) return;
         if (e.getHand() != EquipmentSlot.HAND) return;
 
@@ -93,7 +91,10 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
 
         if (!canExecuteInteract(p, used, e, context)) {
             mxEvent.setCancelled(true);
-            return;
+        }
+
+        if(mxEvent.isCancelled()) {
+            mxEvent.getBukkitEvent().setCancelled(true);
         }
 
         try {
