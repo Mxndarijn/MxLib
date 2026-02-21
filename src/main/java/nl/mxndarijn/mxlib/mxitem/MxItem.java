@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -96,6 +97,21 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
     }
 
     @EventHandler
+    public void onPlaceBlockWithItem(BlockPlaceEvent e) {
+        Player p = e.getPlayer();
+
+        ItemStack inHand = p.getInventory().getItemInMainHand();
+        if (!inHand.hasItemMeta() || inHand.getType() == Material.AIR) return;
+
+        if (!InventoryManager.validateItem(inHand, is)) return;
+
+        // Generic, overridable policy hook
+        if (!canPlaceItem(p, inHand, e)) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onBreakBlockWithItem(BlockBreakEvent e) {
         Player p = e.getPlayer();
 
@@ -156,6 +172,14 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
      * Default delegates to {@link #canExecute(Player, ItemStack)}.
      */
     protected boolean canExecuteBreak(Player player, ItemStack item, BlockBreakEvent event) {
+        return canExecute(player, item);
+    }
+
+    /**
+     * Event-specific hook for block-place events.
+     * Default delegates to {@link #canExecute(Player, ItemStack)}.
+     */
+    protected boolean canPlaceItem(Player player, ItemStack item, BlockPlaceEvent event) {
         return canExecute(player, item);
     }
 
