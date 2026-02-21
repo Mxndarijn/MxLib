@@ -65,6 +65,7 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void interact(PlayerInteractEvent e) {
+        Logger.logMessage(LogLevel.DEBUG, "running item");
         if (Arrays.stream(actions).noneMatch(a -> a == e.getAction())) return;
         if (e.getHand() != EquipmentSlot.HAND) return;
 
