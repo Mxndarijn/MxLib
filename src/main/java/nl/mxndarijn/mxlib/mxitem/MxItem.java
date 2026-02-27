@@ -88,9 +88,23 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
 
     /** Compares by the unique MxItem tag stored in the item's PersistentDataContainer. */
     public boolean isItemTheSame(ItemStack item) {
+
+        //New based checking based on nbt data
         if (item == null || item.getType() == Material.AIR || item.getItemMeta() == null) return false;
         PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
-        return itemTag.equals(pdc.get(namespacedKey, PersistentDataType.STRING));
+        if(itemTag.equals(pdc.get(namespacedKey, PersistentDataType.STRING)))
+            return true;
+
+        //Legacy Based checking
+        if (item.getType() != is.getType()) return false;
+
+        if (is.getItemMeta().hasDisplayName() && item.getItemMeta().hasDisplayName()) {
+            return Functions.convertComponentToString(item.getItemMeta().displayName())
+                .equalsIgnoreCase(Functions.convertComponentToString(is.getItemMeta().displayName()));
+        }
+        return !is.getItemMeta().hasDisplayName();
+
+
     }
 
     /**
