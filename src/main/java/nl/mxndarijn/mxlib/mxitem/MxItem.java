@@ -128,7 +128,7 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
         T context = createContext();
 
         if (!canExecuteInteract(p, used, e, context)) {
-            mxEvent.setCancelled(true);
+            return;
         }
 
         if(mxEvent.isCancelled()) {
