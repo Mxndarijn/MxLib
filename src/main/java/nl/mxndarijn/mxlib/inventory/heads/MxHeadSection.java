@@ -193,5 +193,7 @@ public class MxHeadSection {
         section.set("type", type.getType());
         section.set("uuid", uuid != null ? uuid.toString() : null);
         section.set("refreshed", lastRefreshed != null ? lastRefreshed.toString() : null);
+
+        ConfigService.getInstance().get(StandardConfigFile.HEAD_DATA).save();
     }
 }
