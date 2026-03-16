@@ -2,6 +2,7 @@ package nl.mxndarijn.mxlib.inventory.heads;
 
 import lombok.Getter;
 import lombok.Setter;
+import nl.mxndarijn.mxlib.MxLib;
 import nl.mxndarijn.mxlib.configfiles.ConfigService;
 import nl.mxndarijn.mxlib.configfiles.StandardConfigFile;
 import nl.mxndarijn.mxlib.logger.LogLevel;
@@ -9,8 +10,11 @@ import nl.mxndarijn.mxlib.logger.Logger;
 import nl.mxndarijn.mxlib.logger.StandardPrefix;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -80,8 +84,26 @@ public class MxHeadSection {
 
         ConfigurationSection section = cfg.getConfigurationSection(key);
         if (section == null) {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Could not load head: " + key);
-            return Optional.empty();
+            // Try to find the key in the bundled resource defaults
+            try {
+                InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(
+                        MxLib.getPlugin().getResource(ConfigService.getInstance().get(StandardConfigFile.HEAD_DATA).getType().fileName())));
+                FileConfiguration defaults = YamlConfiguration.loadConfiguration(reader);
+                ConfigurationSection defaultSection = defaults.getConfigurationSection(key);
+                if (defaultSection != null) {
+                    // Copy the default section into the live config so future lookups hit the cache
+                    cfg.set(key, defaultSection);
+                    section = cfg.getConfigurationSection(key);
+                    Logger.logMessage(LogLevel.INFORMATION, StandardPrefix.MXHEAD_MANAGER, "Loaded head '" + key + "' from bundled defaults.");
+                }
+            } catch (Exception e) {
+                Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Error reading bundled defaults for head: " + key);
+            }
+
+            if (section == null) {
+                Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Could not load head: " + key);
+                return Optional.empty();
+            }
         }
 
         MxHeadSection mx = new MxHeadSection();
@@ -193,7 +215,5 @@ public class MxHeadSection {
         section.set("type", type.getType());
         section.set("uuid", uuid != null ? uuid.toString() : null);
         section.set("refreshed", lastRefreshed != null ? lastRefreshed.toString() : null);
-
-        ConfigService.getInstance().get(StandardConfigFile.HEAD_DATA).save();
     }
 }

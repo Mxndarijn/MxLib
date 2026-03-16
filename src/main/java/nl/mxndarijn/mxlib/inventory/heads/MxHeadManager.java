@@ -14,10 +14,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -31,22 +29,6 @@ public class MxHeadManager {
 
     public MxHeadManager() {
         fileConfiguration = ConfigService.getInstance().get(StandardConfigFile.HEAD_DATA).getCfg();
-        // Ensure all default head-data keys from resources are present in the plugin's head-data file
-        try {
-            InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(MxLib.getPlugin().getResource(ConfigService.getInstance().get(StandardConfigFile.HEAD_DATA).getType().fileName())));
-            FileConfiguration defaults = YamlConfiguration.loadConfiguration(reader);
-            int before = fileConfiguration.getKeys(false).size();
-            fileConfiguration.addDefaults(defaults);
-            fileConfiguration.options().copyDefaults(true);
-            fileConfiguration.save(ConfigService.getInstance().get(StandardConfigFile.HEAD_DATA).getFile());
-            int after = fileConfiguration.getKeys(false).size();
-            int added = Math.max(0, after - before);
-            if (added > 0) {
-                Logger.logMessage(LogLevel.INFORMATION, StandardPrefix.MXHEAD_MANAGER, "Added " + added + " missing head-data entries from defaults.");
-            }
-        } catch (Exception e) {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Error while ensuring head-data defaults: " + e.getMessage());
-        }
         long period = 30L * 60L * 20L; // 30 minutes in ticks
         long delay = 200L; // 10 seconds initial delay
         Bukkit.getScheduler().runTaskTimerAsynchronously(MxLib.getPlugin(), () -> {
