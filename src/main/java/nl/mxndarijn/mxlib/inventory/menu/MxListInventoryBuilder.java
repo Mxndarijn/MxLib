@@ -185,7 +185,7 @@ public class MxListInventoryBuilder extends MxMenuBuilder<MxListInventoryBuilder
     }
 
     public MxListInventoryBuilder setShowPageNumbers(boolean b) {
-        showPageNumbers = false;
+        showPageNumbers = b;
 
         return this;
     }

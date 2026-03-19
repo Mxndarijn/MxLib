@@ -10,12 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,21 +100,16 @@ public class MxAtlas {
             throw new RuntimeException(e);
         }
 
-        BukkitTask task = Bukkit.getScheduler().runTask(plugin, () -> {
+        Bukkit.getScheduler().runTask(plugin, () -> {
             World world = wc.createWorld();
             if (world == null) {
                 future.complete(false);
                 return;
             }
-            File worldSettings = new File(mxWorld.getDir() + File.separator + "worldsettings.yml");
-            if (!worldSettings.exists()) {
-                Functions.copyFileFromResources("worldsettings.yml", worldSettings);
-            }
             Logger.logMessage(LogLevel.DEBUG, StandardPrefix.MXATLAS, "Loading worldsettings.yml... ");
-            FileConfiguration worldSettingsCfg = YamlConfiguration.loadConfiguration(worldSettings);
-            world.setAutoSave(worldSettingsCfg.getBoolean("autosave", false));
-            ConfigurationSection sc = worldSettingsCfg.getConfigurationSection("spawn_chunks");
-            int radius = (sc != null) ? sc.getInt("force_loaded_radius_chunks", 0) : 0;
+            MxWorldSettings worldSettings = MxWorldSettings.load(mxWorld.getDir());
+            world.setAutoSave(worldSettings.isAutoSaveEnabled());
+            int radius = worldSettings.getSpawnChunksForceLoadedRadius();
 
             if (radius > 0) {
                 var spawnLoc = world.getSpawnLocation();
@@ -132,13 +123,11 @@ public class MxAtlas {
                 }
             }
 
-            ConfigurationSection gamerules = worldSettingsCfg.getConfigurationSection("gamerules");
-            GameRuleUtil.applyGameRules(world, gamerules);
+            GameRuleUtil.applyGameRules(world, worldSettings.getGameRules());
 
-            ConfigurationSection spawn = worldSettingsCfg.getConfigurationSection("spawn");
-            if (spawn != null) {
+            if (worldSettings.getSpawn() != null) {
                 Logger.logMessage(LogLevel.DEBUG, StandardPrefix.MXATLAS, "Setting spawnlocation... ");
-                world.setSpawnLocation(Functions.getLocationFromConfiguration(world, spawn));
+                world.setSpawnLocation(Functions.getLocationFromConfiguration(world, worldSettings.getSpawn()));
             }
 
             mxWorld.setWorldUID(world.getUID());

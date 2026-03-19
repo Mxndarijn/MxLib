@@ -42,7 +42,7 @@ public final class GameRuleUtil {
     }
 
     private static NamespacedKey toNamespacedKey(String s) {
-        // accepteer zowel "minecraft:advance_time" als "advance_time"
+        // accepts both "minecraft:gamerule" and plain "gamerule" format
         if (s.contains(":")) return NamespacedKey.fromString(s);
         return new NamespacedKey(NamespacedKey.MINECRAFT, s);
     }

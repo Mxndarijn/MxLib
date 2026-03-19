@@ -17,14 +17,27 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 
 public class Functions {
+
+    /**
+     * Returns the spawn location of the primary world (first world loaded by the server).
+     *
+     * @return the spawn location of the first world
+     */
     public static Location getSpawnLocation() {
-        return Bukkit.getWorld("world").getSpawnLocation();
+        return Bukkit.getWorlds().get(0).getSpawnLocation();
     }
 
+    /**
+     * Constructs a {@link Location} from a YAML {@link ConfigurationSection} containing
+     * x, y, z and optionally yaw and pitch keys.
+     *
+     * @param w       the world the location belongs to
+     * @param section the configuration section with coordinate values
+     * @return the constructed location
+     */
     public static Location getLocationFromConfiguration(World w, ConfigurationSection section) {
         if (section.contains("yaw") && section.contains("pitch")) {
             return new Location(w, section.getDouble("x"), section.getDouble("y"), section.getDouble("z"), (float) section.getDouble("yaw"), (float) section.getDouble("pitch"));
@@ -33,91 +46,82 @@ public class Functions {
         }
     }
 
+    /**
+     * Copies a resource file from the plugin jar to the plugin data folder at the given relative path.
+     *
+     * @param fileName the resource file name inside the jar
+     * @param path     the relative destination path inside the plugin data folder
+     */
     public static void copyFileFromResources(String fileName, String path) {
         JavaPlugin plugin = MxLib.getPlugin();
         File destFile = new File(plugin.getDataFolder() + File.separator + path);
         destFile.getParentFile().mkdirs();
-
         copyFileFromResources(fileName, destFile);
     }
 
+    /**
+     * Copies a resource file from the plugin jar to the given destination file.
+     *
+     * @param fileName the resource file name inside the jar
+     * @param destFile the destination file to write to
+     */
     public static void copyFileFromResources(String fileName, File destFile) {
         destFile.getParentFile().mkdirs();
         JavaPlugin plugin = MxLib.getPlugin();
         InputStream inputStream = plugin.getResource(fileName);
         if (inputStream == null) {
-            Logger.logMessage(LogLevel.FATAL, StandardPrefix.CONFIG_FILES, "Could load resource: " + fileName);
+            Logger.logMessage(LogLevel.FATAL, StandardPrefix.CONFIG_FILES, "Could not load resource: " + fileName);
             return;
         }
-
-        try (OutputStream outputStream = Files.newOutputStream(destFile.toPath())) {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, bytesRead);
-            }
+        try (inputStream) {
+            Files.copy(inputStream, destFile.toPath());
         } catch (IOException e) {
             Logger.logMessage(LogLevel.FATAL, StandardPrefix.CONFIG_FILES, "Could not create config file: " + fileName);
-        } finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                Logger.logMessage(LogLevel.ERROR, StandardPrefix.CONFIG_FILES, "Could not close stream for config file: " + fileName);
-            }
         }
     }
 
+    /**
+     * Serializes an Adventure {@link Component} to a plain text string (no formatting).
+     *
+     * @param c the component to serialize
+     * @return the plain text representation
+     */
     public static String convertComponentToString(Component c) {
         PlainTextComponentSerializer plainSerializer = PlainTextComponentSerializer.builder().build();
         return plainSerializer.serialize(c);
     }
 
+    /**
+     * Formats a duration in milliseconds as a {@code MM:SS} string.
+     *
+     * @param timeInMillis the duration in milliseconds
+     * @return formatted time string, e.g. {@code "02:45"}
+     */
     public static String formatGameTime(long timeInMillis) {
-        // Converteer milliseconden naar seconden
         long timeInSeconds = timeInMillis / 1000;
-
-        // Bereken het aantal minuten en seconden van de gegeven tijd
         long minutes = timeInSeconds / 60;
         long seconds = timeInSeconds % 60;
-
-        // Gebruik String.format om de tijd in het juiste formaat weer te geven
         return String.format("%02d:%02d", minutes, seconds);
     }
 
-//    public static String convertWithColors(String input) {
-//        return RGBUtils.getInstance().convertRGBtoLegacy(input);
-//    }
-//
-//    public static List<String> convertListWithColors(List<String> inputList) {
-//        return inputList.stream()
-//                .map(Functions::convertWithColors)
-//                .collect(Collectors.toList());
-//    }
-//
-//    public static java.awt.Color hexToRgb(String hex) {
-//        // Verwijder het '#' karakter als het aanwezig is
-//        if (hex.startsWith("#")) {
-//            hex = hex.substring(1);
-//        }
-//
-//        // Controleer of de hexadecimale kleurcode geldig is
-//        if (hex.length() != 6) {
-//            throw new IllegalArgumentException("Ongeldige hexadecimale kleurcode");
-//        }
-//
-//        // Parse de hexadecimale waarden voor rood, groen en blauw
-//        int red = Integer.parseInt(hex.substring(0, 2), 16);
-//        int green = Integer.parseInt(hex.substring(2, 4), 16);
-//        int blue = Integer.parseInt(hex.substring(4, 6), 16);
-//
-//        // Maak een java.awt.Color object en retourneer het
-//        return new java.awt.Color(red, green, blue);
-//    }
-
+    /**
+     * Deserializes a MiniMessage string into an Adventure {@link Component}
+     * with italic formatting disabled by default.
+     *
+     * @param input the MiniMessage-formatted string
+     * @return the deserialized component
+     */
     public static Component buildComponentFromString(String input) {
         return MiniMessage.miniMessage().deserialize("<!i>" + input);
     }
 
+    /**
+     * Fills all blocks in the axis-aligned bounding box defined by two corners with the given material.
+     *
+     * @param corner1  one corner of the region
+     * @param corner2  the opposite corner of the region
+     * @param material the material to fill with
+     */
     public static void fillBlock(Location corner1, Location corner2, Material material) {
         int minX = Math.min(corner1.getBlockX(), corner2.getBlockX());
         int minY = Math.min(corner1.getBlockY(), corner2.getBlockY());
@@ -135,6 +139,15 @@ public class Functions {
         }
     }
 
+    /**
+     * Replaces all blocks of a given material within the axis-aligned bounding box
+     * defined by two corners with a different material.
+     *
+     * @param corner1 one corner of the region
+     * @param corner2 the opposite corner of the region
+     * @param from    the material to replace
+     * @param to      the material to replace with
+     */
     public static void replaceBlock(Location corner1, Location corner2, Material from, Material to) {
         int minX = Math.min(corner1.getBlockX(), corner2.getBlockX());
         int minY = Math.min(corner1.getBlockY(), corner2.getBlockY());
@@ -153,6 +166,4 @@ public class Functions {
             }
         }
     }
-
-
 }
