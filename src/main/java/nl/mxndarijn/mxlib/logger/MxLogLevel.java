@@ -1,0 +1,40 @@
+package nl.mxndarijn.mxlib.logger;
+
+import lombok.Getter;
+
+import java.util.Optional;
+
+public enum MxLogLevel {
+    FATAL("Fatal", 1, "dark_red"),
+    DEBUG_HIGHLIGHT("Debug-Highlight", 1, "#ff00ff"),
+    ERROR("Error", 2, "red"),
+    WARNING("Warning", 3, "gold"),
+    INFORMATION("Information", 4, "aqua"),
+    DEBUG("Debug", 5, "gray");
+
+    @Getter
+    private final int level;
+    @Getter
+    private final String name;
+    private final String color;
+
+    MxLogLevel(String logName, int level, String color) {
+        this.level = level;
+        this.name = logName;
+        this.color = color;
+    }
+
+    public static Optional<MxLogLevel> getLevelByInt(int i) {
+        for (MxLogLevel l : values()) {
+            if (l.level == i) {
+                return Optional.of(l);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public String getPrefix() {
+        return MxLogger.getPrefix() + "-" + "<" + this.color + ">" + this.name + "<dark_gray>] <yellow>» ";
+    }
+
+}

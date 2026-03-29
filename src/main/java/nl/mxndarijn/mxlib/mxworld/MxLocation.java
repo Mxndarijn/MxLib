@@ -122,7 +122,7 @@ public class MxLocation {
 //        try {
 //            fc.save(file);
 //        } catch (IOException e) {
-//            Logger.logMessage(LogLevel.Error, Prefix.CONFIG_FILES, "Could not write MxLocation (" + file.getAbsolutePath() + ")");
+//            MxLogger.logMessage(MxLogLevel.Error, Prefix.CONFIG_FILES, "Could not write MxLocation (" + file.getAbsolutePath() + ")");
 //            e.printStackTrace();
 //        }
     }

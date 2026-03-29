@@ -2,17 +2,17 @@ package nl.mxndarijn.mxlib.inventory.menu;
 
 import nl.mxndarijn.mxlib.inventory.*;
 import nl.mxndarijn.mxlib.item.MxSkullItemStackBuilder;
-import nl.mxndarijn.mxlib.item.Pair;
-import nl.mxndarijn.mxlib.logger.LogLevel;
-import nl.mxndarijn.mxlib.logger.Logger;
-import nl.mxndarijn.mxlib.logger.StandardPrefix;
+import nl.mxndarijn.mxlib.item.MxPair;
+import nl.mxndarijn.mxlib.logger.MxLogLevel;
+import nl.mxndarijn.mxlib.logger.MxLogger;
+import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
 public class MxListInventoryBuilder extends MxMenuBuilder<MxListInventoryBuilder> {
 
-    private final List<Pair<ItemStack, MxItemClicked>> itemStackList;
+    private final List<MxPair<ItemStack, MxItemClicked>> itemStackList;
     private final List<Integer> availableItemsStackSlots;
     private Optional<ItemStack> nextPageItemStack;
     private Optional<ItemStack> previousPageItemStack;
@@ -47,12 +47,12 @@ public class MxListInventoryBuilder extends MxMenuBuilder<MxListInventoryBuilder
         return new MxListInventoryBuilder(name, slotType);
     }
 
-    public MxListInventoryBuilder addListItems(ArrayList<Pair<ItemStack, MxItemClicked>> list) {
+    public MxListInventoryBuilder addListItems(ArrayList<MxPair<ItemStack, MxItemClicked>> list) {
         itemStackList.addAll(list);
         return this;
     }
 
-    public MxListInventoryBuilder setListItems(List<Pair<ItemStack, MxItemClicked>> list) {
+    public MxListInventoryBuilder setListItems(List<MxPair<ItemStack, MxItemClicked>> list) {
         itemStackList.clear();
         itemStackList.addAll(list);
         return this;
@@ -105,11 +105,11 @@ public class MxListInventoryBuilder extends MxMenuBuilder<MxListInventoryBuilder
     @Override
     public MxInventory build() {
         if (availableItemsStackSlots.isEmpty()) {
-            Logger.logMessage(LogLevel.FATAL, StandardPrefix.MXINVENTORY, "No available item slots...");
+            MxLogger.logMessage(MxLogLevel.FATAL, MxStandardPrefix.MXINVENTORY, "No available item slots...");
             itemStackList.clear();
         }
         Collections.sort(availableItemsStackSlots);
-        Iterator<Pair<ItemStack, MxItemClicked>> iterator = itemStackList.iterator();
+        Iterator<MxPair<ItemStack, MxItemClicked>> iterator = itemStackList.iterator();
 
         int amountOfInventories = (int) Math.ceil((double) itemStackList.size() / availableItemsStackSlots.size());
         if (amountOfInventories == 0) amountOfInventories = 1; // If no values preset, we want to show an inv;
@@ -117,7 +117,7 @@ public class MxListInventoryBuilder extends MxMenuBuilder<MxListInventoryBuilder
         changeTitle(this.name + getSuffix(1, amountOfInventories));
         availableItemsStackSlots.forEach(i -> {
             if (iterator.hasNext()) {
-                Pair<ItemStack, MxItemClicked> entry = iterator.next();
+                MxPair<ItemStack, MxItemClicked> entry = iterator.next();
                 setItem(entry.first, i, entry.second);
             }
         });
@@ -134,7 +134,7 @@ public class MxListInventoryBuilder extends MxMenuBuilder<MxListInventoryBuilder
             });
             availableItemsStackSlots.forEach(itemIndex -> {
                 if (iterator.hasNext()) {
-                    Pair<ItemStack, MxItemClicked> entry = iterator.next();
+                    MxPair<ItemStack, MxItemClicked> entry = iterator.next();
                     builder.setItem(entry.first, itemIndex, entry.second);
                 }
             });
@@ -153,7 +153,7 @@ public class MxListInventoryBuilder extends MxMenuBuilder<MxListInventoryBuilder
                 if (index + 1 < inventories.size()) {
                     MxInventoryManager.getInstance().addAndOpenInventory(e.getWhoClicked().getUniqueId(), inventories.get(index + 1));
                 } else {
-                    Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXINVENTORY, "Could not go next in inventory " + e.getView().title());
+                    MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXINVENTORY, "Could not go next in inventory " + e.getView().title());
                 }
             };
             MxItemClicked goPrevious = (inv, e) -> {
@@ -161,7 +161,7 @@ public class MxListInventoryBuilder extends MxMenuBuilder<MxListInventoryBuilder
                 if (index - 1 >= 0) {
                     MxInventoryManager.getInstance().addAndOpenInventory(e.getWhoClicked().getUniqueId(), inventories.get(index - 1));
                 } else {
-                    Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXINVENTORY, "Could not go previous in inventory " + e.getView().title());
+                    MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXINVENTORY, "Could not go previous in inventory " + e.getView().title());
                 }
             };
             setItem(nextPageItemStack.get(), nextPageItemStackSlot, goNext);

@@ -3,9 +3,9 @@ package nl.mxndarijn.mxlib.item;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import nl.mxndarijn.mxlib.inventory.heads.MxHeadManager;
-import nl.mxndarijn.mxlib.logger.LogLevel;
-import nl.mxndarijn.mxlib.logger.Logger;
-import nl.mxndarijn.mxlib.logger.StandardPrefix;
+import nl.mxndarijn.mxlib.logger.MxLogLevel;
+import nl.mxndarijn.mxlib.logger.MxLogger;
+import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -53,7 +53,7 @@ public class MxSkullItemStackBuilder extends MxItemStackBuilder<MxSkullItemStack
         OfflinePlayer p = Bukkit.getOfflinePlayer(id);
         boolean returnedValue = meta.setOwningPlayer(p);
         if (!returnedValue) {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXINVENTORY, "Could not set owner of skull");
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXINVENTORY, "Could not set owner of skull");
         }
         return this;
     }
@@ -65,7 +65,7 @@ public class MxSkullItemStackBuilder extends MxItemStackBuilder<MxSkullItemStack
         }
 
         if (dataOpt.isEmpty()) {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXINVENTORY, "Could not find skull: " + value + " in heads-data.yml");
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXINVENTORY, "Could not find skull: " + value + " in heads-data.yml");
             return this;
         }
 
@@ -73,7 +73,7 @@ public class MxSkullItemStackBuilder extends MxItemStackBuilder<MxSkullItemStack
         try {
             // make sure itemMeta is a SkullMeta
             if (!(itemMeta instanceof SkullMeta)) {
-                Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXINVENTORY, "ItemMeta is not a SkullMeta for: " + value);
+                MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXINVENTORY, "ItemMeta is not a SkullMeta for: " + value);
                 return this;
             }
             SkullMeta skull = (SkullMeta) itemMeta;
@@ -103,7 +103,7 @@ public class MxSkullItemStackBuilder extends MxItemStackBuilder<MxSkullItemStack
             // if your builder keeps itemMeta to be applied later, ensure itemMeta is updated:
             itemMeta = skull;
         } catch (Exception ex) {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXINVENTORY, "Could not load skull: " + value);
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXINVENTORY, "Could not load skull: " + value);
             ex.printStackTrace();
         }
         return this;

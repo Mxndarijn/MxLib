@@ -39,7 +39,7 @@ public class MxInteractPipeline implements Listener {
     }
 
     /**
-     * Subscribe to the interact pipeline with {@link MxInteractPriority#NORMAL} priority.
+     * MxSubscribe to the interact pipeline with {@link MxInteractPriority#NORMAL} priority.
      *
      * @param subscriber the handler to register
      */
@@ -48,7 +48,7 @@ public class MxInteractPipeline implements Listener {
     }
 
     /**
-     * Subscribe to the interact pipeline with the given priority.
+     * MxSubscribe to the interact pipeline with the given priority.
      * Subscribers with lower priority ordinal (e.g. LOWEST) are called before higher ones.
      *
      * @param subscriber the handler to register

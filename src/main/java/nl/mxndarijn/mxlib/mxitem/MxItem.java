@@ -1,15 +1,15 @@
 package nl.mxndarijn.mxlib.mxitem;
 
 import nl.mxndarijn.mxlib.MxLib;
-import nl.mxndarijn.mxlib.chatprefix.ChatPrefixManager;
-import nl.mxndarijn.mxlib.chatprefix.StandardChatPrefix;
-import nl.mxndarijn.mxlib.language.LanguageManager;
-import nl.mxndarijn.mxlib.language.StandardLanguageText;
-import nl.mxndarijn.mxlib.logger.LogLevel;
-import nl.mxndarijn.mxlib.logger.Logger;
-import nl.mxndarijn.mxlib.logger.StandardPrefix;
-import nl.mxndarijn.mxlib.util.Functions;
-import nl.mxndarijn.mxlib.util.MessageUtil;
+import nl.mxndarijn.mxlib.chatprefix.MxChatPrefixManager;
+import nl.mxndarijn.mxlib.chatprefix.MxStandardChatPrefix;
+import nl.mxndarijn.mxlib.language.MxLanguageManager;
+import nl.mxndarijn.mxlib.language.MxStandardLanguageText;
+import nl.mxndarijn.mxlib.logger.MxLogLevel;
+import nl.mxndarijn.mxlib.logger.MxLogger;
+import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
+import nl.mxndarijn.mxlib.util.MxFunctions;
+import nl.mxndarijn.mxlib.util.MxMessageUtil;
 import nl.mxndarijn.mxlib.util.MxWorldFilter;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -46,14 +46,14 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
     public final JavaPlugin plugin;
     private final ItemStack is;
     private final MxWorldFilter worldFilter;
-    private final LanguageManager languageManager;
+    private final MxLanguageManager languageManager;
     private final Action[] actions;
     private final String itemTag;
     private final NamespacedKey namespacedKey;
 
     public MxItem(ItemStack is, MxWorldFilter worldFilter, Action... actions) {
         this.worldFilter = worldFilter;
-        this.languageManager = LanguageManager.getInstance();
+        this.languageManager = MxLanguageManager.getInstance();
         this.actions = actions;
 
         this.plugin = MxLib.getPlugin();
@@ -67,12 +67,12 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
         // Check if the item already has the tag; if not, log an error and stamp it now.
         ItemMeta meta = is.getItemMeta();
         if (meta == null) {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXITEM,
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXITEM,
                     "ItemStack has no ItemMeta — cannot stamp MxItem tag for: " + this.getClass().getName());
         } else {
             PersistentDataContainer pdc = meta.getPersistentDataContainer();
             if (!pdc.has(namespacedKey, PersistentDataType.STRING)) {
-                Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXITEM,
+                MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXITEM,
                         "ItemStack is missing MxItem tag, stamping it now for: " + this.getClass().getName());
                 pdc.set(namespacedKey, PersistentDataType.STRING, this.itemTag);
                 is.setItemMeta(meta);
@@ -81,7 +81,7 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
 
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
 
-        // Subscribe to the separate interact pipeline instead of relying on ignoreCancelled,
+        // MxSubscribe to the separate interact pipeline instead of relying on ignoreCancelled,
         // because right-clicking air is auto-cancelled by the server.
         MxInteractPipeline.getInstance().subscribe(this::handleMxInteract, MxInteractPriority.HIGH);
     }
@@ -99,8 +99,8 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
         if (item.getType() != is.getType()) return false;
 
         if (is.getItemMeta().hasDisplayName() && item.getItemMeta().hasDisplayName()) {
-            return Functions.convertComponentToString(item.getItemMeta().displayName())
-                .equalsIgnoreCase(Functions.convertComponentToString(is.getItemMeta().displayName()));
+            return MxFunctions.convertComponentToString(item.getItemMeta().displayName())
+                .equalsIgnoreCase(MxFunctions.convertComponentToString(is.getItemMeta().displayName()));
         }
         return !is.getItemMeta().hasDisplayName();
 
@@ -138,14 +138,14 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
         try {
             execute(p, e, context);
         } catch (Exception ex) {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXITEM,
-                    "Could not execute item: " + Functions.convertComponentToString(is.getItemMeta().displayName()));
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXITEM,
+                    "Could not execute item: " + MxFunctions.convertComponentToString(is.getItemMeta().displayName()));
             ex.printStackTrace();
-            MessageUtil.sendMessageToPlayer(p,
+            MxMessageUtil.sendMessageToPlayer(p,
                     languageManager.getLanguageString(
-                            StandardLanguageText.ERROR_WHILE_EXECUTING_ITEM,
+                            MxStandardLanguageText.ERROR_WHILE_EXECUTING_ITEM,
                             Collections.emptyList(),
-                            ChatPrefixManager.getInstance().requireFind(StandardChatPrefix.DEFAULT)));
+                            MxChatPrefixManager.getInstance().requireFind(MxStandardChatPrefix.DEFAULT)));
         }
     }
 
@@ -181,11 +181,11 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
 
         if (worldFilter != null) {
             if (!worldFilter.isPlayerInCorrectWorld(p)) {
-                MessageUtil.sendMessageToPlayer(p,
+                MxMessageUtil.sendMessageToPlayer(p,
                         languageManager.getLanguageString(
-                                StandardLanguageText.NOT_CORRECT_WORLD,
+                                MxStandardLanguageText.NOT_CORRECT_WORLD,
                                 Collections.emptyList(),
-                                ChatPrefixManager.getInstance().requireFind(StandardChatPrefix.DEFAULT)));
+                                MxChatPrefixManager.getInstance().requireFind(MxStandardChatPrefix.DEFAULT)));
                 return;
             }
         }
@@ -193,14 +193,14 @@ public abstract class MxItem<T extends MxItemContext> implements Listener {
         try {
             executeOnBreak(p, e);
         } catch (Exception ex) {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXITEM,
-                    "Could not execute item: " + Functions.convertComponentToString(is.getItemMeta().displayName()));
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXITEM,
+                    "Could not execute item: " + MxFunctions.convertComponentToString(is.getItemMeta().displayName()));
             ex.printStackTrace();
-            MessageUtil.sendMessageToPlayer(p,
+            MxMessageUtil.sendMessageToPlayer(p,
                     languageManager.getLanguageString(
-                            StandardLanguageText.ERROR_WHILE_EXECUTING_ITEM,
+                            MxStandardLanguageText.ERROR_WHILE_EXECUTING_ITEM,
                             Collections.emptyList(),
-                            ChatPrefixManager.getInstance().requireFind(StandardChatPrefix.DEFAULT)));
+                            MxChatPrefixManager.getInstance().requireFind(MxStandardChatPrefix.DEFAULT)));
         }
     }
 

@@ -1,8 +1,8 @@
 package nl.mxndarijn.mxlib.permission;
 
-import nl.mxndarijn.mxlib.logger.LogLevel;
-import nl.mxndarijn.mxlib.logger.Logger;
-import nl.mxndarijn.mxlib.logger.StandardPrefix;
+import nl.mxndarijn.mxlib.logger.MxLogLevel;
+import nl.mxndarijn.mxlib.logger.MxLogger;
+import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -18,10 +18,10 @@ public final class MxPermissionService {
         if (instance == null) {
             instance = new MxPermissionService();
             instance.basePrefix = prefix;
-            Logger.logMessage(LogLevel.DEBUG, StandardPrefix.PERMISSION_SERVICE,
+            MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.PERMISSION_SERVICE,
                     "PermissionService initialized with prefix: " + prefix);
         } else {
-            Logger.logMessage(LogLevel.WARNING, StandardPrefix.PERMISSION_SERVICE,
+            MxLogger.logMessage(MxLogLevel.WARNING, MxStandardPrefix.PERMISSION_SERVICE,
                     "PermissionService is already initialized!");
         }
     }
@@ -38,11 +38,11 @@ public final class MxPermissionService {
         return basePrefix + "." + node;
     }
 
-    public boolean hasPlayerPermission(Player player, PermissionType permission) {
+    public boolean hasPlayerPermission(Player player, MxPermissionType permission) {
         return player.hasPermission(buildFull(permission.node()));
     }
 
-    public boolean hasSenderPermission(CommandSender sender, PermissionType permission) {
+    public boolean hasSenderPermission(CommandSender sender, MxPermissionType permission) {
         return sender.hasPermission(buildFull(permission.node()));
     }
 }

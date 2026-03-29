@@ -1,6 +1,6 @@
 package nl.mxndarijn.mxlib.mxworld;
 
-import nl.mxndarijn.mxlib.util.Functions;
+import nl.mxndarijn.mxlib.util.MxFunctions;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -42,7 +42,7 @@ public class MxWorldSettings {
     public static MxWorldSettings load(File worldDir) {
         File settingsFile = new File(worldDir, "worldsettings.yml");
         if (!settingsFile.exists()) {
-            Functions.copyFileFromResources("worldsettings.yml", settingsFile);
+            MxFunctions.copyFileFromResources("worldsettings.yml", settingsFile);
         }
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(settingsFile);
         return new MxWorldSettings(cfg);

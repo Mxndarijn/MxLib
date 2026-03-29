@@ -1,0 +1,36 @@
+package nl.mxndarijn.mxlib.configfiles;
+
+import lombok.Getter;
+import nl.mxndarijn.mxlib.logger.MxLogLevel;
+import nl.mxndarijn.mxlib.logger.MxLogger;
+import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
+
+@Getter
+public final class MxConfigHandle {
+    private final MxConfigFileType type;
+    private final File file;
+    private final FileConfiguration cfg;
+
+    public MxConfigHandle(MxConfigFileType type, File file) {
+        this.type = type;
+        this.file = file;
+        this.cfg = YamlConfiguration.loadConfiguration(file);
+    }
+
+    public void save() {
+        try {
+            MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.CONFIG_FILES,
+                    "Saving file... " + type.path());
+            cfg.save(file);
+        } catch (IOException e) {
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.CONFIG_FILES,
+                    "Could not save file... " + type.path());
+        }
+    }
+
+}

@@ -1,15 +1,15 @@
 package nl.mxndarijn.mxlib.mxcommand;
 
-import nl.mxndarijn.mxlib.chatprefix.ChatPrefixManager;
-import nl.mxndarijn.mxlib.chatprefix.StandardChatPrefix;
-import nl.mxndarijn.mxlib.language.LanguageManager;
-import nl.mxndarijn.mxlib.language.StandardLanguageText;
-import nl.mxndarijn.mxlib.logger.LogLevel;
-import nl.mxndarijn.mxlib.logger.Logger;
-import nl.mxndarijn.mxlib.logger.StandardPrefix;
+import nl.mxndarijn.mxlib.chatprefix.MxChatPrefixManager;
+import nl.mxndarijn.mxlib.chatprefix.MxStandardChatPrefix;
+import nl.mxndarijn.mxlib.language.MxLanguageManager;
+import nl.mxndarijn.mxlib.language.MxStandardLanguageText;
+import nl.mxndarijn.mxlib.logger.MxLogLevel;
+import nl.mxndarijn.mxlib.logger.MxLogger;
+import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
 import nl.mxndarijn.mxlib.permission.MxPermissionService;
-import nl.mxndarijn.mxlib.permission.PermissionType;
-import nl.mxndarijn.mxlib.util.MessageUtil;
+import nl.mxndarijn.mxlib.permission.MxPermissionType;
+import nl.mxndarijn.mxlib.util.MxMessageUtil;
 import nl.mxndarijn.mxlib.util.MxWorldFilter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -26,23 +26,23 @@ import java.util.Collections;
  */
 public abstract class MxCommand implements CommandExecutor {
 
-    private final PermissionType permission;
+    private final MxPermissionType permission;
     private final boolean onlyPlayersCanExecute;
     private final MxWorldFilter worldFilter;
 
-    private final LanguageManager languageManager;
-    private final ChatPrefixManager chatPrefixManager;
+    private final MxLanguageManager languageManager;
+    private final MxChatPrefixManager chatPrefixManager;
 
-    public MxCommand(PermissionType permission, boolean onlyPlayersCanExecute, MxWorldFilter worldFilter) {
+    public MxCommand(MxPermissionType permission, boolean onlyPlayersCanExecute, MxWorldFilter worldFilter) {
         this.permission = permission;
         this.onlyPlayersCanExecute = onlyPlayersCanExecute;
         this.worldFilter = worldFilter;
 
-        this.languageManager = LanguageManager.getInstance();
-        this.chatPrefixManager = ChatPrefixManager.getInstance();
+        this.languageManager = MxLanguageManager.getInstance();
+        this.chatPrefixManager = MxChatPrefixManager.getInstance();
     }
 
-    public MxCommand(PermissionType permission, boolean onlyPlayersCanExecute) {
+    public MxCommand(MxPermissionType permission, boolean onlyPlayersCanExecute) {
         this(permission, onlyPlayersCanExecute, null);
     }
 
@@ -50,32 +50,32 @@ public abstract class MxCommand implements CommandExecutor {
     public final boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // Sender type requirement
         if (onlyPlayersCanExecute && !(sender instanceof Player)) {
-            MessageUtil.sendMessageToPlayer(sender,
+            MxMessageUtil.sendMessageToPlayer(sender,
                     languageManager.getLanguageString(
-                            StandardLanguageText.NO_PLAYER,
+                            MxStandardLanguageText.NO_PLAYER,
                             Collections.emptyList(),
-                            chatPrefixManager.requireFind(StandardChatPrefix.DEFAULT)));
+                            chatPrefixManager.requireFind(MxStandardChatPrefix.DEFAULT)));
             return true;
         }
 
         // Permission check (overridable)
         if (!hasPermission(sender)) {
-            MessageUtil.sendMessageToPlayer(sender,
+            MxMessageUtil.sendMessageToPlayer(sender,
                     languageManager.getLanguageString(
-                            StandardLanguageText.NO_PERMISSION,
+                            MxStandardLanguageText.NO_PERMISSION,
                             Collections.emptyList(),
-                            chatPrefixManager.requireFind(StandardChatPrefix.DEFAULT)));
+                            chatPrefixManager.requireFind(MxStandardChatPrefix.DEFAULT)));
             return true;
         }
 
         // World filter (generic)
 //        if (sender instanceof Player player && worldFilter != null) {
 //            if (!worldFilter.isPlayerInCorrectWorld(player)) {
-//                MessageUtil.sendMessageToPlayer(sender,
+//                MxMessageUtil.sendMessageToPlayer(sender,
 //                        languageManager.getLanguageString(
-//                                StandardLanguageText.NOT_CORRECT_WORLD,
+//                                MxStandardLanguageText.NOT_CORRECT_WORLD,
 //                                Collections.emptyList(),
-//                                chatPrefixManager.requireFind(StandardChatPrefix.DEFAULT)));
+//                                chatPrefixManager.requireFind(MxStandardChatPrefix.DEFAULT)));
 //                return true;
 //            }
 //        }
@@ -93,20 +93,20 @@ public abstract class MxCommand implements CommandExecutor {
         try {
             execute(sender, command, label, args);
         } catch (Exception e) {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXCOMMAND,
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXCOMMAND,
                     "Could not execute command " + command.getName());
             e.printStackTrace();
-            MessageUtil.sendMessageToPlayer(sender,
+            MxMessageUtil.sendMessageToPlayer(sender,
                     languageManager.getLanguageString(
-                            StandardLanguageText.ERROR_WHILE_EXECUTING_COMMAND,
+                            MxStandardLanguageText.ERROR_WHILE_EXECUTING_COMMAND,
                             Collections.emptyList(),
-                            chatPrefixManager.requireFind(StandardChatPrefix.DEFAULT)));
+                            chatPrefixManager.requireFind(MxStandardChatPrefix.DEFAULT)));
         }
         return true;
     }
 
     /**
-     * Overridable permission check. Defaults to Bukkit permission node from {@link PermissionType}.
+     * Overridable permission check. Defaults to Bukkit permission node from {@link MxPermissionType}.
      */
     protected boolean hasPermission(CommandSender sender) {
         return MxPermissionService.getInstance().hasSenderPermission(sender, permission);

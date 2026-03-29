@@ -48,7 +48,7 @@ public class MxScoreBoardTeam {
 
     public void setLine(String line) {
         if (line.length() > scoreboard.MAX_LINE_LENGTH) {
-            throw new ScoreboardNameToLongException(line, scoreboard.MAX_LINE_LENGTH);
+            throw new MxScoreboardNameTooLongException(line, scoreboard.MAX_LINE_LENGTH);
         }
 
         String regex = "&#([0-9a-fA-F]{6})";
@@ -70,7 +70,7 @@ public class MxScoreBoardTeam {
             String prefix = line.substring(0, scoreboard.MAX_LINE_LENGTH / 2);
             String suffix = "<gray>" + (prefix) + line.substring(scoreboard.MAX_LINE_LENGTH / 2);
             if ((prefix + suffix).length() > scoreboard.MAX_LINE_LENGTH)
-                throw new ScoreboardNameToLongException(line, scoreboard.MAX_LINE_LENGTH);
+                throw new MxScoreboardNameTooLongException(line, scoreboard.MAX_LINE_LENGTH);
             team.prefix(MiniMessage.miniMessage().deserialize("<!i>" + prefix));
             team.suffix(MiniMessage.miniMessage().deserialize("<!i>" + suffix));
 

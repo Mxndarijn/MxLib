@@ -5,11 +5,11 @@ import com.destroystokyo.paper.profile.ProfileProperty;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import nl.mxndarijn.mxlib.MxLib;
-import nl.mxndarijn.mxlib.configfiles.ConfigService;
-import nl.mxndarijn.mxlib.configfiles.StandardConfigFile;
-import nl.mxndarijn.mxlib.logger.LogLevel;
-import nl.mxndarijn.mxlib.logger.Logger;
-import nl.mxndarijn.mxlib.logger.StandardPrefix;
+import nl.mxndarijn.mxlib.configfiles.MxConfigService;
+import nl.mxndarijn.mxlib.configfiles.MxStandardConfigFile;
+import nl.mxndarijn.mxlib.logger.MxLogLevel;
+import nl.mxndarijn.mxlib.logger.MxLogger;
+import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -28,12 +28,12 @@ public class MxHeadManager {
     private final FileConfiguration fileConfiguration;
 
     public MxHeadManager() {
-        fileConfiguration = ConfigService.getInstance().get(StandardConfigFile.HEAD_DATA).getCfg();
+        fileConfiguration = MxConfigService.getInstance().get(MxStandardConfigFile.HEAD_DATA).getCfg();
         long period = 30L * 60L * 20L; // 30 minutes in ticks
         long delay = 200L; // 10 seconds initial delay
         Bukkit.getScheduler().runTaskTimerAsynchronously(MxLib.getPlugin(), () -> {
             try {
-                Logger.logMessage(LogLevel.INFORMATION, StandardPrefix.MXHEAD_MANAGER, "Refreshing up to 40 player skulls older than 2 days (least recently refreshed first)...");
+                MxLogger.logMessage(MxLogLevel.INFORMATION, MxStandardPrefix.MXHEAD_MANAGER, "Refreshing up to 40 player skulls older than 2 days (least recently refreshed first)...");
                 // Collect PLAYER heads with their lastRefreshed
                 List<MxHeadSection> playerHeads = new ArrayList<>();
                 for (String key : fileConfiguration.getKeys(false)) {
@@ -63,7 +63,7 @@ public class MxHeadManager {
                     if (section.getUuidOptional().isEmpty()) continue;
                     Optional<String> value = getTexture(section.getUuidOptional().get());
                     if (value.isEmpty()) {
-                        Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Could not get texture for " + key + ", skipping texture...");
+                        MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not get texture for " + key + ", skipping texture...");
                         // Still mark as refreshed to avoid hot-looping failing entries
                         section.setLastRefreshed(LocalDateTime.now());
                         section.apply();
@@ -76,7 +76,7 @@ public class MxHeadManager {
                     section.apply();
                 }
             } catch (Exception e) {
-                Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Error during scheduled skull refresh: " + e.getMessage());
+                MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Error during scheduled skull refresh: " + e.getMessage());
                 e.printStackTrace();
             }
         }, delay, period);
@@ -131,19 +131,19 @@ public class MxHeadManager {
                     if (ownerOptional.isPresent()) {
                         Optional<MxHeadSection> section = MxHeadSection.create(textureName, displayName, type, texture, ownerOptional.get());
                         if (section.isEmpty()) {
-                            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Could not create MxHeadSection, wrong input.");
+                            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not create MxHeadSection, wrong input.");
                             return false;
                         }
                         section.get().apply();
                         return true;
                     } else {
-                        Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Error while creating head-data, no owner but type is player.");
+                        MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Error while creating head-data, no owner but type is player.");
                         return false;
                     }
                 } else {
                     Optional<MxHeadSection> section = MxHeadSection.create(textureName, displayName, type, texture);
                     if (section.isEmpty()) {
-                        Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Could not create MxHeadSection, wrong input.");
+                        MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not create MxHeadSection, wrong input.");
                         return false;
                     }
                     section.get().apply();
@@ -166,16 +166,16 @@ public class MxHeadManager {
                     ProfileProperty texture = optionalTexture.get();
                     return Optional.of(texture.getValue());
                 } else {
-                    Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Could not find texture");
+                    MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not find texture");
                     return Optional.empty();
                 }
             } catch (Exception e) {
-                Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Error while retrieving texture:");
+                MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Error while retrieving texture:");
                 e.printStackTrace();
                 return Optional.empty();
             }
         } else {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Could not load head data, because item was not a head.");
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not load head data, because item was not a head.");
             return Optional.empty();
         }
     }
@@ -185,12 +185,12 @@ public class MxHeadManager {
             SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
             OfflinePlayer player = skullMeta.getOwningPlayer();
             if (player == null) {
-                Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Could not load head data, because it does not have an owner.");
+                MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not load head data, because it does not have an owner.");
                 return Optional.empty();
             }
             return Optional.of(skullMeta.getOwningPlayer().getUniqueId());
         } else {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Could not load head data, because item was not a head.");
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not load head data, because item was not a head.");
             return Optional.empty();
         }
     }
@@ -213,7 +213,7 @@ public class MxHeadManager {
             JsonObject textureProperty = new JsonParser().parse(reader_1).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
             texture = Optional.of(textureProperty.get("value").getAsString());
         } catch (IOException e) {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Could not retrieve skin data from mojang servers... (" + uuid.toString() + ")");
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not retrieve skin data from mojang servers... (" + uuid.toString() + ")");
             e.printStackTrace();
         }
         return texture;

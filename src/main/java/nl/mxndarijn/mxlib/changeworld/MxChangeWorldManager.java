@@ -1,7 +1,7 @@
 package nl.mxndarijn.mxlib.changeworld;
-import nl.mxndarijn.mxlib.logger.LogLevel;
-import nl.mxndarijn.mxlib.logger.Logger;
-import nl.mxndarijn.mxlib.logger.StandardPrefix;
+import nl.mxndarijn.mxlib.logger.MxLogLevel;
+import nl.mxndarijn.mxlib.logger.MxLogger;
+import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -23,7 +23,7 @@ public class MxChangeWorldManager implements Listener {
     private final List<MxChangeWorld> unspecificWorlds = new ArrayList<>();
 
     private MxChangeWorldManager(JavaPlugin plugin) {
-        Logger.logMessage(LogLevel.DEBUG, StandardPrefix.CHANGEWORLD_MANAGER, "Loading...");
+        MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.CHANGEWORLD_MANAGER, "Loading...");
         worlds = new HashMap<>();
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -54,13 +54,13 @@ public class MxChangeWorldManager implements Listener {
             if (worlds.containsKey(from)) {
                 worlds.get(from).forEach(mxChangeWorld -> mxChangeWorld.leave(e.getPlayer(), e.getFrom(), e));
             } else {
-                Logger.logMessage(LogLevel.DEBUG, StandardPrefix.CHANGEWORLD_MANAGER, "World: " + e.getFrom().getName() + " not found (leaving this world). (" + e.getPlayer().getName() + ")");
+                MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.CHANGEWORLD_MANAGER, "World: " + e.getFrom().getName() + " not found (leaving this world). (" + e.getPlayer().getName() + ")");
             }
         }
         if (worlds.containsKey(to)) {
             worlds.get(to).forEach(mxChangeWorld -> mxChangeWorld.enter(e.getPlayer(), toWorld, e));
         } else {
-            Logger.logMessage(LogLevel.DEBUG, StandardPrefix.CHANGEWORLD_MANAGER, "World: " + e.getPlayer().getWorld().getName() + " not found (going to this world). (" + e.getPlayer().getName() + ")");
+            MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.CHANGEWORLD_MANAGER, "World: " + e.getPlayer().getWorld().getName() + " not found (going to this world). (" + e.getPlayer().getName() + ")");
         }
     }
 
@@ -68,7 +68,7 @@ public class MxChangeWorldManager implements Listener {
     public void worldUnload(WorldUnloadEvent e) {
         UUID worldUID = e.getWorld().getUID();
         if (worlds.containsKey(worldUID)) {
-            Logger.logMessage(LogLevel.DEBUG, StandardPrefix.CHANGEWORLD_MANAGER, "World: " + e.getWorld().getName() + " has been unloaded.");
+            MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.CHANGEWORLD_MANAGER, "World: " + e.getWorld().getName() + " has been unloaded.");
             worlds.remove(worldUID);
 
         }

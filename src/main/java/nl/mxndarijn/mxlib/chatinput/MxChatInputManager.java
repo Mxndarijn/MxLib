@@ -1,10 +1,10 @@
 package nl.mxndarijn.mxlib.chatinput;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
-import nl.mxndarijn.mxlib.logger.LogLevel;
-import nl.mxndarijn.mxlib.logger.Logger;
-import nl.mxndarijn.mxlib.logger.StandardPrefix;
-import nl.mxndarijn.mxlib.util.Functions;
+import nl.mxndarijn.mxlib.logger.MxLogLevel;
+import nl.mxndarijn.mxlib.logger.MxLogger;
+import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
+import nl.mxndarijn.mxlib.util.MxFunctions;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,7 +22,7 @@ public class MxChatInputManager implements Listener {
         map = new HashMap<>();
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        Logger.logMessage(LogLevel.INFORMATION, StandardPrefix.MXCHATINPUT_MANAGER, "MxChatInputManager loaded...");
+        MxLogger.logMessage(MxLogLevel.INFORMATION, MxStandardPrefix.MXCHATINPUT_MANAGER, "MxChatInputManager loaded...");
 
     }
 
@@ -44,7 +44,7 @@ public class MxChatInputManager implements Listener {
             e.setCancelled(true);
             MxChatInputCallback inputCallback = map.get(uuid);
             map.remove(uuid);
-            inputCallback.textReceived(Functions.convertComponentToString(e.message()));
+            inputCallback.textReceived(MxFunctions.convertComponentToString(e.message()));
         }
     }
 

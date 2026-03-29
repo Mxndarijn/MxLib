@@ -3,7 +3,7 @@ package nl.mxndarijn.mxlib.mxscoreboard;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import nl.mxndarijn.mxlib.util.Functions;
+import nl.mxndarijn.mxlib.util.MxFunctions;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -124,7 +124,7 @@ public abstract class MxScoreBoard {
         String title = getTitle();
         List<String> lines = getLines();
 
-        if (!Functions.convertComponentToString(this.objective.displayName()).equals(title)) {
+        if (!MxFunctions.convertComponentToString(this.objective.displayName()).equals(title)) {
             this.objective.displayName(MiniMessage.miniMessage().deserialize("<!i>" + title));
         }
 

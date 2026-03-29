@@ -18,6 +18,8 @@ import java.util.Optional;
 /**
  * Builder for menus that support a "previous" navigation entry.
  * Avoids storing Optional fields; plain nullable references are used instead.
+ *
+ * @param <T> the concrete builder type (self-referential for fluent chaining)
  */
 @Getter
 public class MxMenuBuilder<T extends MxInventoryBuilder<T>> extends MxInventoryBuilder<T> {

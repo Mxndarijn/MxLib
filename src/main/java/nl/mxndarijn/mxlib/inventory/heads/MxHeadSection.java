@@ -3,11 +3,11 @@ package nl.mxndarijn.mxlib.inventory.heads;
 import lombok.Getter;
 import lombok.Setter;
 import nl.mxndarijn.mxlib.MxLib;
-import nl.mxndarijn.mxlib.configfiles.ConfigService;
-import nl.mxndarijn.mxlib.configfiles.StandardConfigFile;
-import nl.mxndarijn.mxlib.logger.LogLevel;
-import nl.mxndarijn.mxlib.logger.Logger;
-import nl.mxndarijn.mxlib.logger.StandardPrefix;
+import nl.mxndarijn.mxlib.configfiles.MxConfigService;
+import nl.mxndarijn.mxlib.configfiles.MxStandardConfigFile;
+import nl.mxndarijn.mxlib.logger.MxLogLevel;
+import nl.mxndarijn.mxlib.logger.MxLogger;
+import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -78,8 +78,8 @@ public class MxHeadSection {
      * Returns Optional.empty() when missing or invalid.
      */
     public static Optional<MxHeadSection> loadHead(String key) {
-        FileConfiguration cfg = ConfigService.getInstance()
-                .get(StandardConfigFile.HEAD_DATA)
+        FileConfiguration cfg = MxConfigService.getInstance()
+                .get(MxStandardConfigFile.HEAD_DATA)
                 .getCfg();
 
         ConfigurationSection section = cfg.getConfigurationSection(key);
@@ -87,21 +87,21 @@ public class MxHeadSection {
             // Try to find the key in the bundled resource defaults
             try {
                 InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(
-                        MxLib.getPlugin().getResource(ConfigService.getInstance().get(StandardConfigFile.HEAD_DATA).getType().fileName())));
+                        MxLib.getPlugin().getResource(MxConfigService.getInstance().get(MxStandardConfigFile.HEAD_DATA).getType().fileName())));
                 FileConfiguration defaults = YamlConfiguration.loadConfiguration(reader);
                 ConfigurationSection defaultSection = defaults.getConfigurationSection(key);
                 if (defaultSection != null) {
                     // Copy the default section into the live config so future lookups hit the cache
                     cfg.set(key, defaultSection);
                     section = cfg.getConfigurationSection(key);
-                    Logger.logMessage(LogLevel.INFORMATION, StandardPrefix.MXHEAD_MANAGER, "Loaded head '" + key + "' from bundled defaults.");
+                    MxLogger.logMessage(MxLogLevel.INFORMATION, MxStandardPrefix.MXHEAD_MANAGER, "Loaded head '" + key + "' from bundled defaults.");
                 }
             } catch (Exception e) {
-                Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Error reading bundled defaults for head: " + key);
+                MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Error reading bundled defaults for head: " + key);
             }
 
             if (section == null) {
-                Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER, "Could not load head: " + key);
+                MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not load head: " + key);
                 return Optional.empty();
             }
         }
@@ -196,13 +196,13 @@ public class MxHeadSection {
      */
     public void apply() {
         if (!validate()) {
-            Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXHEAD_MANAGER,
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER,
                     "Could not save MxHeadSection " + key + " because it was not valid.");
             return;
         }
 
-        FileConfiguration cfg = ConfigService.getInstance()
-                .get(StandardConfigFile.HEAD_DATA)
+        FileConfiguration cfg = MxConfigService.getInstance()
+                .get(MxStandardConfigFile.HEAD_DATA)
                 .getCfg();
 
         ConfigurationSection section = cfg.getConfigurationSection(key);

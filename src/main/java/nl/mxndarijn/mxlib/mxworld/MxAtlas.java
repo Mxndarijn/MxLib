@@ -1,10 +1,10 @@
 package nl.mxndarijn.mxlib.mxworld;
 
-import nl.mxndarijn.mxlib.logger.LogLevel;
-import nl.mxndarijn.mxlib.logger.Logger;
-import nl.mxndarijn.mxlib.logger.StandardPrefix;
-import nl.mxndarijn.mxlib.util.Functions;
-import nl.mxndarijn.mxlib.util.VoidGenerator;
+import nl.mxndarijn.mxlib.logger.MxLogLevel;
+import nl.mxndarijn.mxlib.logger.MxLogger;
+import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
+import nl.mxndarijn.mxlib.util.MxFunctions;
+import nl.mxndarijn.mxlib.util.MxVoidGenerator;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -28,7 +28,7 @@ public class MxAtlas {
     }
 
     private MxAtlas(JavaPlugin plugin) {
-        Logger.logMessage(LogLevel.INFORMATION, StandardPrefix.MXATLAS, "Started MxAtlas... (World-Manager)");
+        MxLogger.logMessage(MxLogLevel.INFORMATION, MxStandardPrefix.MXATLAS, "Started MxAtlas... (World-Manager)");
         worlds = new ArrayList<>();
         setPlugin(plugin);
     }
@@ -78,9 +78,9 @@ public class MxAtlas {
     public CompletableFuture<Boolean> loadMxWorld(MxWorld mxWorld) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
-        Logger.logMessage(LogLevel.DEBUG, StandardPrefix.MXATLAS, "Loading MxWorld: " + mxWorld.getName());
+        MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.MXATLAS, "Loading MxWorld: " + mxWorld.getName());
         if (mxWorld.isLoaded()) {
-            Logger.logMessage(LogLevel.WARNING, StandardPrefix.MXATLAS, mxWorld.getName() + " is already loaded.");
+            MxLogger.logMessage(MxLogLevel.WARNING, MxStandardPrefix.MXATLAS, mxWorld.getName() + " is already loaded.");
             future.complete(true);
             return future;
         }
@@ -88,11 +88,11 @@ public class MxAtlas {
         WorldCreator wc = new WorldCreator(path);
         wc.environment(World.Environment.NORMAL);
         wc.type(WorldType.FLAT);
-        wc.generator(new VoidGenerator());
+        wc.generator(new MxVoidGenerator());
         wc.generateStructures(false);
         File dir = mxWorld.getDir();
         try {
-            Logger.logMessage(LogLevel.DEBUG, StandardPrefix.MXATLAS,
+            MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.MXATLAS,
                     "About to load world from path: raw=" + dir +
                             ", abs=" + dir.getAbsolutePath() +
                             ", canonical=" + dir.getCanonicalPath());
@@ -106,7 +106,7 @@ public class MxAtlas {
                 future.complete(false);
                 return;
             }
-            Logger.logMessage(LogLevel.DEBUG, StandardPrefix.MXATLAS, "Loading worldsettings.yml... ");
+            MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.MXATLAS, "Loading worldsettings.yml... ");
             MxWorldSettings worldSettings = MxWorldSettings.load(mxWorld.getDir());
             world.setAutoSave(worldSettings.isAutoSaveEnabled());
             int radius = worldSettings.getSpawnChunksForceLoadedRadius();
@@ -123,11 +123,11 @@ public class MxAtlas {
                 }
             }
 
-            GameRuleUtil.applyGameRules(world, worldSettings.getGameRules());
+            MxGameRuleUtil.applyGameRules(world, worldSettings.getGameRules());
 
             if (worldSettings.getSpawn() != null) {
-                Logger.logMessage(LogLevel.DEBUG, StandardPrefix.MXATLAS, "Setting spawnlocation... ");
-                world.setSpawnLocation(Functions.getLocationFromConfiguration(world, worldSettings.getSpawn()));
+                MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.MXATLAS, "Setting spawnlocation... ");
+                world.setSpawnLocation(MxFunctions.getLocationFromConfiguration(world, worldSettings.getSpawn()));
             }
 
             mxWorld.setWorldUID(world.getUID());
@@ -143,20 +143,20 @@ public class MxAtlas {
     public boolean unloadMxWorld(MxWorld mxWorld, boolean save) {
         if (!mxWorld.isLoaded())
             return true;
-        Logger.logMessage(LogLevel.DEBUG, StandardPrefix.MXATLAS, "Unloading MxWorld: " + mxWorld.getName());
+        MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.MXATLAS, "Unloading MxWorld: " + mxWorld.getName());
         World w = Bukkit.getWorld(mxWorld.getWorldUID());
         if (w == null) {
-            Logger.logMessage(LogLevel.WARNING, StandardPrefix.MXATLAS, "Could not unload MxWorld (World is null): " + mxWorld.getName());
+            MxLogger.logMessage(MxLogLevel.WARNING, MxStandardPrefix.MXATLAS, "Could not unload MxWorld (World is null): " + mxWorld.getName());
             return false;
         }
         for (Player p : w.getPlayers()) {
-            p.teleport(Functions.getSpawnLocation());
+            p.teleport(MxFunctions.getSpawnLocation());
         }
         boolean unloaded = Bukkit.unloadWorld(w, save);
         if (unloaded) {
             mxWorld.setLoaded(false);
         } else {
-            Logger.logMessage(LogLevel.WARNING, StandardPrefix.MXATLAS, "Could not unload MxWorld: " + mxWorld.getName());
+            MxLogger.logMessage(MxLogLevel.WARNING, MxStandardPrefix.MXATLAS, "Could not unload MxWorld: " + mxWorld.getName());
         }
         return unloaded;
     }
@@ -171,7 +171,7 @@ public class MxAtlas {
         try {
             FileUtils.deleteDirectory(mxWorld.getDir());
         } catch (IOException e) {
-            Logger.logMessage(LogLevel.WARNING, StandardPrefix.MXATLAS, "Could not delete MxWorld: " + mxWorld.getName());
+            MxLogger.logMessage(MxLogLevel.WARNING, MxStandardPrefix.MXATLAS, "Could not delete MxWorld: " + mxWorld.getName());
             e.printStackTrace();
             return false;
         }
@@ -188,7 +188,7 @@ public class MxAtlas {
             uidDat.delete();
 
         } catch (IOException e) {
-            Logger.logMessage(LogLevel.WARNING, StandardPrefix.MXATLAS, "Could not duplicate MxWorld: " + worldToClone.getName());
+            MxLogger.logMessage(MxLogLevel.WARNING, MxStandardPrefix.MXATLAS, "Could not duplicate MxWorld: " + worldToClone.getName());
             e.printStackTrace();
             return Optional.empty();
         }
@@ -213,9 +213,9 @@ public class MxAtlas {
                     MxWorld mxWorld = new MxWorld(file.getName(), file.getName(), file);
                     list.add(mxWorld);
                     worlds.add(mxWorld);
-                    Logger.logMessage(LogLevel.DEBUG, StandardPrefix.MXATLAS, "Adding world to MxAtlas: " + file.getName() + " (" + file.getAbsolutePath() + ")");
+                    MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.MXATLAS, "Adding world to MxAtlas: " + file.getName() + " (" + file.getAbsolutePath() + ")");
                 } else {
-                    Logger.logMessage(LogLevel.ERROR, StandardPrefix.MXATLAS, "Could not load folder because it does not have a uid.dat file. (" + file.getAbsolutePath() + ")");
+                    MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXATLAS, "Could not load folder because it does not have a uid.dat file. (" + file.getAbsolutePath() + ")");
                 }
             }
         }
@@ -225,7 +225,7 @@ public class MxAtlas {
     public Optional<MxWorld> loadWorld(File dir) {
         MxWorld mxWorld = new MxWorld(dir.getName(), dir.getName(), dir);
         worlds.add(mxWorld);
-        Logger.logMessage(LogLevel.DEBUG, StandardPrefix.MXATLAS, "Adding world to MxAtlas: " + dir.getName() + " (" + dir.getAbsolutePath() + ")");
+        MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.MXATLAS, "Adding world to MxAtlas: " + dir.getName() + " (" + dir.getAbsolutePath() + ")");
         return Optional.of(mxWorld);
     }
 }
