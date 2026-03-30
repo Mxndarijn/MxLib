@@ -3,7 +3,6 @@ package nl.mxndarijn.mxlib.mxeventbus.core;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 
 /**
  * Shared scanning and validation logic for annotation-driven event-bus binders.
@@ -50,7 +49,8 @@ public abstract class MxAbstractAnnotationBinder<B> {
     /**
      * Validates that a {@link MxSubscribe}-annotated method has the correct signature:
      * returns {@code void}, has exactly one parameter, and that parameter is a
-     * parameterised context type wrapping a concrete event class.
+     * parameterised context type. Subclasses are responsible for further validation
+     * of the type arguments in {@link #registerHandler}.
      *
      * @param method          the method to validate
      * @param ownerSimpleName simple name of the declaring class, used in error messages
@@ -74,13 +74,6 @@ public abstract class MxAbstractAnnotationBinder<B> {
             throw new IllegalArgumentException(
                     "@MxSubscribe method " + methodRef
                             + " parameter must be a parameterised context type, not a raw type");
-        }
-        Type[] typeArgs = pt.getActualTypeArguments();
-        if (typeArgs.length != 1 || !(typeArgs[0] instanceof Class<?>)) {
-            throw new IllegalArgumentException(
-                    "@MxSubscribe method " + methodRef
-                            + " context type argument must be a concrete class, found: "
-                            + Arrays.toString(typeArgs));
         }
     }
 
