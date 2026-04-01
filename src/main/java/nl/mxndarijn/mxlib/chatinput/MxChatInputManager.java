@@ -5,6 +5,7 @@ import nl.mxndarijn.mxlib.logger.MxLogLevel;
 import nl.mxndarijn.mxlib.logger.MxLogger;
 import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
 import nl.mxndarijn.mxlib.util.MxFunctions;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -17,8 +18,10 @@ public class MxChatInputManager implements Listener {
 
     private static MxChatInputManager instance;
     private final HashMap<UUID, MxChatInputCallback> map;
+    private final JavaPlugin plugin;
 
     private MxChatInputManager(JavaPlugin plugin) {
+        this.plugin = plugin;
         map = new HashMap<>();
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -44,7 +47,8 @@ public class MxChatInputManager implements Listener {
             e.setCancelled(true);
             MxChatInputCallback inputCallback = map.get(uuid);
             map.remove(uuid);
-            inputCallback.textReceived(MxFunctions.convertComponentToString(e.message()));
+            String message = MxFunctions.convertComponentToString(e.message());
+            Bukkit.getScheduler().runTask(plugin, () -> inputCallback.textReceived(message));
         }
     }
 

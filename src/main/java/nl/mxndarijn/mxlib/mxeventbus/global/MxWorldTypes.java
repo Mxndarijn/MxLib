@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  * <pre>{@code
  * @Subscribe
  * @WorldTypes({WorldType.SPAWN, MxWorldType.PRESET})
- * public void onChat(MxGlobalEventContext<GlobalChatEvent, MxWorldType> ctx) { ... }
+ * public void onChat(MxGlobalEventContext<MxGlobalChatEvent, MxWorldType> ctx) { ... }
  * }</pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
