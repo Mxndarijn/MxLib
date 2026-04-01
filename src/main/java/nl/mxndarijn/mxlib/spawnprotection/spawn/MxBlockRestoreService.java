@@ -1,6 +1,5 @@
 package nl.mxndarijn.mxlib.spawnprotection.spawn;
 
-import nl.mxndarijn.wieisdemol.WieIsDeMol;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -20,7 +19,7 @@ import java.util.HashMap;
  * a restore is scheduled for 2 minutes later (2400 ticks). Pending restores are persisted
  * to {@code spawn-gate-restores.yml} so they survive server restarts.</p>
  *
- * <p>This service is a singleton; obtain the instance via {@link #getInstance()}.</p>
+ * <p>This service is a singleton; obtain the instance via {@link #getInstance(JavaPlugin)}.</p>
  */
 public final class MxBlockRestoreService {
 
@@ -41,8 +40,8 @@ public final class MxBlockRestoreService {
     /**
      * Private constructor. Loads and schedules any restores that survived a server restart.
      */
-    private MxBlockRestoreService() {
-        plugin = JavaPlugin.getPlugin(WieIsDeMol.class);
+    private MxBlockRestoreService(JavaPlugin plugin) {
+        this.plugin = plugin;
         restoreFile = new File(plugin.getDataFolder(), "spawn-gate-restores.yml");
         loadAndScheduleRestores();
     }
@@ -50,11 +49,12 @@ public final class MxBlockRestoreService {
     /**
      * Returns the singleton instance of {@code MxBlockRestoreService}, creating it if necessary.
      *
+     * @param plugin the {@link JavaPlugin} instance used for scheduling and data folder access
      * @return the singleton instance; never {@code null}
      */
-    public static MxBlockRestoreService getInstance() {
+    public static MxBlockRestoreService getInstance(JavaPlugin plugin) {
         if (instance == null)
-            instance = new MxBlockRestoreService();
+            instance = new MxBlockRestoreService(plugin);
         return instance;
     }
 

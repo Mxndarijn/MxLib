@@ -13,7 +13,7 @@ import java.util.UUID;
  *
  * <p>Subclasses declare handler methods annotated with {@link MxSubscribe} and
  * {@link MxWorldTypes}, and are registered into the {@link MxGlobalEventBus} via
- * {@link WidmGlobalAnnotationBinder#bind(MxGlobalEventBus, Object)}.</p>
+ * {@link nl.mxndarijn.mxlib.mxeventbus.global.MxGlobalAnnotationBinder#bind(MxGlobalEventBus, Object)}.</p>
  *
  * <p>Example:</p>
  * <pre>{@code

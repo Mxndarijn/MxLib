@@ -3,7 +3,7 @@ package nl.mxndarijn.mxlib.spawnprotection.events.pipeline.events;
 
 import nl.mxndarijn.mxlib.mxeventbus.global.MxGlobalEvent;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxWorldType;
-import nl.mxndarijn.wieisdemol.readytomove.events.base.SpawnEventRegistry;
+import nl.mxndarijn.mxlib.spawnprotection.events.base.MxSpawnEventRegistry;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 
@@ -24,7 +24,7 @@ public final class MxSpawnPlayerArmorStandManipulateEvent extends MxGlobalEvent<
      * @param paperEvent the underlying Bukkit armor stand manipulate event; must not be {@code null}
      */
     public MxSpawnPlayerArmorStandManipulateEvent(Player player, PlayerArmorStandManipulateEvent paperEvent) {
-        super(SpawnEventRegistry.getWorldTypeResolver().resolve(player.getWorld()));
+        super(MxSpawnEventRegistry.getWorldTypeResolver().resolve(player.getWorld()));
         this.player = player;
         this.paperEvent = paperEvent;
     }

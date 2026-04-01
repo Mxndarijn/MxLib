@@ -3,7 +3,7 @@ package nl.mxndarijn.mxlib.spawnprotection.events.pipeline.events;
 
 import nl.mxndarijn.mxlib.mxeventbus.global.MxGlobalEvent;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxWorldType;
-import nl.mxndarijn.wieisdemol.readytomove.events.base.SpawnEventRegistry;
+import nl.mxndarijn.mxlib.spawnprotection.events.base.MxSpawnEventRegistry;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 
 /**
@@ -21,7 +21,7 @@ public final class MxSpawnEntityPickupItemEvent extends MxGlobalEvent<MxWorldTyp
      * @param paperEvent the underlying Bukkit entity pickup item event; must not be {@code null}
      */
     public MxSpawnEntityPickupItemEvent(EntityPickupItemEvent paperEvent) {
-        super(SpawnEventRegistry.getWorldTypeResolver().resolve(paperEvent.getEntity().getWorld()));
+        super(MxSpawnEventRegistry.getWorldTypeResolver().resolve(paperEvent.getEntity().getWorld()));
         this.paperEvent = paperEvent;
     }
 

@@ -3,7 +3,7 @@ package nl.mxndarijn.mxlib.spawnprotection.events.pipeline.events;
 
 import nl.mxndarijn.mxlib.mxeventbus.global.MxGlobalEvent;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxWorldType;
-import nl.mxndarijn.wieisdemol.readytomove.events.base.SpawnEventRegistry;
+import nl.mxndarijn.mxlib.spawnprotection.events.base.MxSpawnEventRegistry;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
 /**
@@ -21,7 +21,7 @@ public final class MxSpawnEntityChangeBlockEvent extends MxGlobalEvent<MxWorldTy
      * @param paperEvent the underlying Bukkit entity change block event; must not be {@code null}
      */
     public MxSpawnEntityChangeBlockEvent(EntityChangeBlockEvent paperEvent) {
-        super(SpawnEventRegistry.getWorldTypeResolver().resolve(paperEvent.getBlock().getWorld()));
+        super(MxSpawnEventRegistry.getWorldTypeResolver().resolve(paperEvent.getBlock().getWorld()));
         this.paperEvent = paperEvent;
     }
 

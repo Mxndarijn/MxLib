@@ -4,7 +4,7 @@ package nl.mxndarijn.mxlib.spawnprotection.events.pipeline.events;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxGlobalEvent;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxWorldType;
-import nl.mxndarijn.wieisdemol.readytomove.events.base.SpawnEventRegistry;
+import nl.mxndarijn.mxlib.spawnprotection.events.base.MxSpawnEventRegistry;
 import org.bukkit.entity.Player;
 
 /**
@@ -28,7 +28,7 @@ public final class MxGlobalChatEvent extends MxGlobalEvent<MxWorldType> {
      * @param paperEvent the underlying Paper async chat event; must not be {@code null}
      */
     public MxGlobalChatEvent(Player player, AsyncChatEvent paperEvent) {
-        super(SpawnEventRegistry.getWorldTypeResolver().resolve(player.getWorld()));
+        super(MxSpawnEventRegistry.getWorldTypeResolver().resolve(player.getWorld()));
         if (player == null) throw new IllegalArgumentException("player must not be null");
         if (paperEvent == null) throw new IllegalArgumentException("paperEvent must not be null");
         this.player = player;

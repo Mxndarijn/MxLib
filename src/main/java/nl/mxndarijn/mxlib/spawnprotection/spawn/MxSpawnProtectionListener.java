@@ -1,4 +1,4 @@
-﻿package nl.mxndarijn.mxlib.spawnprotection.spawn;
+package nl.mxndarijn.mxlib.spawnprotection.spawn;
 
 import nl.mxndarijn.mxlib.mxeventbus.core.MxCancellationState;
 import nl.mxndarijn.mxlib.mxeventbus.core.MxSubscribe;

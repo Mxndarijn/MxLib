@@ -3,7 +3,7 @@ package nl.mxndarijn.mxlib.spawnprotection.events.pipeline.events;
 
 import nl.mxndarijn.mxlib.mxeventbus.global.MxGlobalEvent;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxWorldType;
-import nl.mxndarijn.wieisdemol.readytomove.events.base.SpawnEventRegistry;
+import nl.mxndarijn.mxlib.spawnprotection.events.base.MxSpawnEventRegistry;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 /**
@@ -21,7 +21,7 @@ public final class MxSpawnEntityDamageEvent extends MxGlobalEvent<MxWorldType> {
      * @param paperEvent the underlying Bukkit entity damage event; must not be {@code null}
      */
     public MxSpawnEntityDamageEvent(EntityDamageEvent paperEvent) {
-        super(SpawnEventRegistry.getWorldTypeResolver().resolve(paperEvent.getEntity().getWorld()));
+        super(MxSpawnEventRegistry.getWorldTypeResolver().resolve(paperEvent.getEntity().getWorld()));
         this.paperEvent = paperEvent;
     }
 

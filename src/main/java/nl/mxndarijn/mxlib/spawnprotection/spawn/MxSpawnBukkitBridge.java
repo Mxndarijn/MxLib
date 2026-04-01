@@ -25,7 +25,7 @@ import org.bukkit.event.player.*;
  * {@link MxSpawnPlayerLifecycleListener}) registered on the bus.</p>
  *
  * <p>Cancellation of underlying Bukkit events is handled exclusively by
- * {@link nl.mxndarijn.wieisdemol.global.events.pipeline.listeners.MonitorDefaultGlobalListener}
+ * {@link nl.mxndarijn.mxlib.spawnprotection.spawn.MxSpawnBukkitBridge}
  * in the MONITOR phase, which reads the resolved verdict from the context and calls
  * {@code getPaperEvent().setCancelled(true)} when denied.</p>
  */

@@ -3,7 +3,7 @@ package nl.mxndarijn.mxlib.spawnprotection.events.pipeline.events;
 
 import nl.mxndarijn.mxlib.mxeventbus.global.MxGlobalEvent;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxWorldType;
-import nl.mxndarijn.wieisdemol.readytomove.events.base.SpawnEventRegistry;
+import nl.mxndarijn.mxlib.spawnprotection.events.base.MxSpawnEventRegistry;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 /**
@@ -21,7 +21,7 @@ public final class MxSpawnInventoryClickEvent extends MxGlobalEvent<MxWorldType>
      * @param paperEvent the underlying Bukkit inventory click event; must not be {@code null}
      */
     public MxSpawnInventoryClickEvent(InventoryClickEvent paperEvent) {
-        super(SpawnEventRegistry.getWorldTypeResolver().resolve(paperEvent.getWhoClicked().getWorld()));
+        super(MxSpawnEventRegistry.getWorldTypeResolver().resolve(paperEvent.getWhoClicked().getWorld()));
         this.paperEvent = paperEvent;
     }
 
