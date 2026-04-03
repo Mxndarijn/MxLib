@@ -17,12 +17,12 @@ import nl.mxndarijn.mxlib.spawnprotection.events.pipeline.events.*;
  * <p>Non-cancellable events (join, quit, advancement) are handled with their own
  * post-dispatch logic rather than a cancellation flag.</p>
  */
-public class MonitorDefaultGlobalListener extends MxGlobalEventListener {
+public class MxMonitorDefaultGlobalListener extends MxGlobalEventListener {
 
     /**
      * Constructs a new {@code MonitorDefaultGlobalListener}.
      */
-    public MonitorDefaultGlobalListener() {
+    public MxMonitorDefaultGlobalListener() {
         super();
     }
 

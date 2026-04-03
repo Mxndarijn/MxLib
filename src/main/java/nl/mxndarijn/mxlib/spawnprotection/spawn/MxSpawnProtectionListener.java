@@ -175,7 +175,7 @@ public final class MxSpawnProtectionListener extends MxGlobalEventListener {
 
     /**
      * Handles player block interactions in the spawn world.
-     * Cancels interactions with flower pots and all potted-plant variants (prevents stealing the planted item).
+     * Cancels interactions with flower pots, decorated pots, and all potted-plant variants (prevents stealing the planted item).
      * Cancels interactions with inventory-opening blocks entirely.
      * Allows interactions with openable blocks (gates, doors, trapdoors) but schedules
      * a state restore via {@link MxBlockRestoreService} after 2 minutes.
@@ -201,7 +201,7 @@ public final class MxSpawnProtectionListener extends MxGlobalEventListener {
             return;
         }
 
-        if (type == Material.FLOWER_POT || type.name().startsWith("POTTED_")) {
+        if (type == Material.FLOWER_POT || type == Material.DECORATED_POT || type.name().startsWith("POTTED_")) {
             ctx.submitVerdict(MxCancellationState.HARD_DENY);
             return;
         }
