@@ -62,6 +62,11 @@ public class MxInventoryManager implements Listener {
                     clicked.OnItemClicked(mxInventory, e);
                 }
                 break;
+            } else if (e.getClickedInventory() == e.getWhoClicked().getInventory()) {
+                if (!mxInventory.isAllowItemsInInventory()) {
+                    e.setCancelled(true);
+                    break;
+                }
             }
         }
     }

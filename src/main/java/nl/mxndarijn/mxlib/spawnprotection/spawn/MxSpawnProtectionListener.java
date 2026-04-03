@@ -12,6 +12,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
@@ -265,12 +266,14 @@ public final class MxSpawnProtectionListener extends MxGlobalEventListener {
     /**
      * Cancels entity spawning (mobs, minecarts, boats, etc.) in the spawn world
      * unless at least one player with spawn-modify mode active is present.
+     * Armor stands are always allowed to spawn so that hologram decorations work correctly.
      *
      * @param ctx the event context wrapping a {@link MxSpawnEntitySpawnEvent}
      */
     @MxSubscribe
     @MxWorldTypes(MxWorldType.SPAWN)
     public void cancelEntitySpawn(MxGlobalEventContext<MxSpawnEntitySpawnEvent, MxWorldType> ctx) {
+        if (ctx.event().getPaperEvent().getEntity() instanceof ArmorStand) return;
         boolean anyModifyPlayer = ctx.event().getPaperEvent().getEntity().getWorld()
                 .getPlayers().stream()
                 .anyMatch(provider::isInModifyMode);

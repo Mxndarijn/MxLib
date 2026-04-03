@@ -16,6 +16,7 @@ public class MxInventoryBuilder<T extends MxInventoryBuilder<T>> {
     protected boolean delete = true;
     protected boolean cancelEvent = true;
     protected boolean canBeClosed = true;
+    protected boolean allowItemsInInventory = false;
 
     protected MxOnInventoryCloseEvent closeEvent = null;
 
@@ -62,8 +63,13 @@ public class MxInventoryBuilder<T extends MxInventoryBuilder<T>> {
     }
 
 
+    public T allowItemsInInventory(boolean allowItemsInInventory) {
+        this.allowItemsInInventory = allowItemsInInventory;
+        return (T) this;
+    }
+
     public MxInventory build() {
-        return new MxInventory(inv, name, onClickedMap, delete, cancelEvent, canBeClosed, closeEvent);
+        return new MxInventory(inv, name, onClickedMap, delete, cancelEvent, canBeClosed, closeEvent, allowItemsInInventory);
     }
 
     public T defaultCancelEvent(boolean b) {
