@@ -15,11 +15,11 @@ public class MxInventory {
     private final boolean cancelEvent;
     @Setter
     private boolean canBeClosed;
-    private final boolean allowItemsInInventory;
+    private final boolean allowBottomInventoryInteraction;
 
     private final MxOnInventoryCloseEvent closeEvent;
 
-    public MxInventory(Inventory inv, String invName, HashMap<Integer, MxItemClicked> onClickedMap, boolean delete, boolean cancelEvent, boolean closed, MxOnInventoryCloseEvent closeEvent, boolean allowItemsInInventory) {
+    public MxInventory(Inventory inv, String invName, HashMap<Integer, MxItemClicked> onClickedMap, boolean delete, boolean cancelEvent, boolean closed, MxOnInventoryCloseEvent closeEvent, boolean allowBottomInventoryInteraction) {
         this.inv = inv;
         this.onClickedMap = onClickedMap;
         this.name = invName;
@@ -27,7 +27,7 @@ public class MxInventory {
         this.cancelEvent = cancelEvent;
         this.canBeClosed = closed;
         this.closeEvent = closeEvent;
-        this.allowItemsInInventory = allowItemsInInventory;
+        this.allowBottomInventoryInteraction = allowBottomInventoryInteraction;
     }
 
 }
