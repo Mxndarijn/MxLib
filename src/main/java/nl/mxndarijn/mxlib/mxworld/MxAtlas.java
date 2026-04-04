@@ -4,7 +4,6 @@ import nl.mxndarijn.mxlib.logger.MxLogLevel;
 import nl.mxndarijn.mxlib.logger.MxLogger;
 import nl.mxndarijn.mxlib.logger.MxStandardPrefix;
 import nl.mxndarijn.mxlib.util.MxFunctions;
-import nl.mxndarijn.mxlib.util.MxVoidGenerator;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -76,6 +75,10 @@ public class MxAtlas {
     }
 
     public CompletableFuture<Boolean> loadMxWorld(MxWorld mxWorld) {
+        return loadMxWorld(mxWorld, MxWorldLoadConfig.defaults());
+    }
+
+    public CompletableFuture<Boolean> loadMxWorld(MxWorld mxWorld, MxWorldLoadConfig config) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.MXATLAS, "Loading MxWorld: " + mxWorld.getName());
@@ -86,10 +89,12 @@ public class MxAtlas {
         }
         String path = mxWorld.getDir().toString().replace("\\", "/");
         WorldCreator wc = new WorldCreator(path);
-        wc.environment(World.Environment.NORMAL);
-        wc.type(WorldType.FLAT);
-        wc.generator(new MxVoidGenerator());
-        wc.generateStructures(false);
+        wc.environment(config.getEnvironment());
+        wc.type(config.getWorldType());
+        if (config.getChunkGenerator() != null) {
+            wc.generator(config.getChunkGenerator());
+        }
+        wc.generateStructures(config.isGenerateStructures());
         File dir = mxWorld.getDir();
         try {
             MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.MXATLAS,
