@@ -135,6 +135,18 @@ public class MxMonitorDefaultGlobalListener extends MxGlobalEventListener {
     }
 
     /**
+     * Applies cancellation to the underlying {@link org.bukkit.event.player.PlayerInteractAtEntityEvent}.
+     *
+     * @param ctx the event context carrying the cancellation verdict
+     */
+    @MxSubscribe(priority = MxPriority.MONITOR)
+    public void onPlayerInteractAtEntity(MxGlobalEventContext<MxSpawnPlayerInteractAtEntityEvent, MxWorldType> ctx) {
+        if (ctx.isCancelled()) {
+            ctx.event().getPaperEvent().setCancelled(true);
+        }
+    }
+
+    /**
      * Applies cancellation to the underlying {@link org.bukkit.event.player.PlayerPortalEvent}.
      *
      * @param ctx the event context carrying the cancellation verdict

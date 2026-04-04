@@ -157,6 +157,17 @@ public final class MxSpawnBukkitBridge implements Listener {
     }
 
     /**
+     * Translates a Bukkit {@link PlayerInteractAtEntityEvent} and posts it to the bus.
+     *
+     * @param e the Bukkit event
+     */
+    @EventHandler
+    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent e) {
+        if (!(e.getPlayer() instanceof Player player)) return;
+        bus.post(new MxSpawnPlayerInteractAtEntityEvent(player, e));
+    }
+
+    /**
      * Translates a Bukkit {@link PlayerPortalEvent} and posts it to the bus.
      *
      * @param e the Bukkit event

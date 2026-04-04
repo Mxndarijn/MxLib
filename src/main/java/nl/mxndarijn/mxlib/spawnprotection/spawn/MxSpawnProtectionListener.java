@@ -13,7 +13,9 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 
@@ -266,14 +268,16 @@ public final class MxSpawnProtectionListener extends MxGlobalEventListener {
     /**
      * Cancels entity spawning (mobs, minecarts, boats, etc.) in the spawn world
      * unless at least one player with spawn-modify mode active is present.
-     * Armor stands are always allowed to spawn so that hologram decorations work correctly.
+     * Armor stands, text displays, and interaction entities are always allowed to spawn
+     * so that hologram decorations (including modern display-entity based holograms) work correctly.
      *
      * @param ctx the event context wrapping a {@link MxSpawnEntitySpawnEvent}
      */
     @MxSubscribe
     @MxWorldTypes(MxWorldType.SPAWN)
     public void cancelEntitySpawn(MxGlobalEventContext<MxSpawnEntitySpawnEvent, MxWorldType> ctx) {
-        if (ctx.event().getPaperEvent().getEntity() instanceof ArmorStand) return;
+        var entity = ctx.event().getPaperEvent().getEntity();
+        if (entity instanceof ArmorStand || entity instanceof TextDisplay || entity instanceof Interaction) return;
         boolean anyModifyPlayer = ctx.event().getPaperEvent().getEntity().getWorld()
                 .getPlayers().stream()
                 .anyMatch(provider::isInModifyMode);
@@ -319,6 +323,22 @@ public final class MxSpawnProtectionListener extends MxGlobalEventListener {
     @MxSubscribe
     @MxWorldTypes(MxWorldType.SPAWN)
     public void cancelSignEdit(MxGlobalEventContext<MxSpawnSignChangeEvent, MxWorldType> ctx) {
+        if (provider.isInModifyMode(ctx.event().getPlayer())) return;
+        ctx.submitVerdict(MxCancellationState.HARD_DENY);
+    }
+
+    /**
+     * Cancels right-click interactions with armor stands, text displays, and interaction entities
+     * in the spawn world unless the player has spawn-modify mode active.
+     * This prevents players from accidentally modifying hologram decorations.
+     *
+     * @param ctx the event context wrapping a {@link MxSpawnPlayerInteractAtEntityEvent}
+     */
+    @MxSubscribe
+    @MxWorldTypes(MxWorldType.SPAWN)
+    public void cancelHologramEntityInteract(MxGlobalEventContext<MxSpawnPlayerInteractAtEntityEvent, MxWorldType> ctx) {
+        var entity = ctx.event().getPaperEvent().getRightClicked();
+        if (!(entity instanceof ArmorStand || entity instanceof TextDisplay || entity instanceof Interaction)) return;
         if (provider.isInModifyMode(ctx.event().getPlayer())) return;
         ctx.submitVerdict(MxCancellationState.HARD_DENY);
     }
