@@ -7,6 +7,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -32,28 +34,26 @@ public class MxInventoryManager implements Listener {
 
     public static MxInventoryManager getInstance() {
         if (instance == null) {
-            throw new IllegalStateException("MxInventoryManager is initialized!");
+            throw new IllegalStateException("MxInventoryManager is not initialized!");
         }
         return instance;
     }
 
     @EventHandler
     public void InventoryClick(InventoryClickEvent e) {
-        e.getWhoClicked();
         if (e.getClickedInventory() == null) {
             return;
-        } else {
-            e.getView().title();
         }
 
         UUID uuid = e.getWhoClicked().getUniqueId();
         if (!inventories.containsKey(uuid)) {
             return;
         }
-        List<MxInventory> get = inventories.get(uuid);
-        for (int i = 0; i < get.size(); i++) {
-            MxInventory mxInventory = get.get(i);
-            if (e.getClickedInventory() == mxInventory.getInv()) {
+
+        List<MxInventory> playerInventories = inventories.get(uuid);
+        for (MxInventory mxInventory : playerInventories) {
+            // Check if the clicked inventory is the MxInventory
+            if (e.getClickedInventory().equals(mxInventory.getInv())) {
                 if (mxInventory.isCancelEvent()) {
                     e.setCancelled(true);
                 }
@@ -61,12 +61,17 @@ public class MxInventoryManager implements Listener {
                 if (clicked != null) {
                     clicked.OnItemClicked(mxInventory, e);
                 }
-                break;
-            } else if (e.getClickedInventory() == e.getWhoClicked().getInventory()) {
-                if (!mxInventory.isAllowBottomInventoryInteraction()) {
-                    e.setCancelled(true);
-                    break;
+                return;
+            }
+
+            // Check if the player clicked their own inventory while an MxInventory is open as the top inventory
+            if (e.getView().getTopInventory().equals(mxInventory.getInv())) {
+                if (e.getClickedInventory().equals(e.getWhoClicked().getInventory())) {
+                    if (!mxInventory.isAllowBottomInventoryInteraction()) {
+                        e.setCancelled(true);
+                    }
                 }
+                return;
             }
         }
     }
@@ -81,11 +86,7 @@ public class MxInventoryManager implements Listener {
         Iterator<MxInventory> i = list.iterator();
         while (i.hasNext()) {
             MxInventory mxInventory = i.next();
-            String title = e.getView().getTitle();
-            if (e.getView().title() instanceof TextComponent) {
-                title = ((TextComponent) e.getView().title()).content();
-            }
-            if (mxInventory.getName().contains(title)) {
+            if (e.getInventory().equals(mxInventory.getInv())) {
                 if (!mxInventory.isCanBeClosed()) {
                     Bukkit.getScheduler().runTaskLater(plugin, () -> {
                         e.getPlayer().openInventory(mxInventory.getInv());
@@ -96,10 +97,13 @@ public class MxInventoryManager implements Listener {
                         mxInventory.getCloseEvent().onClose(p, mxInventory, e);
                     }
                     if (mxInventory.isDelete()) {
-                        list.remove(mxInventory);
-                        break;
+                        i.remove();
+                        if (list.isEmpty()) {
+                            inventories.remove(uuid);
+                        }
                     }
                 }
+                return;
             }
         }
     }
@@ -116,6 +120,7 @@ public class MxInventoryManager implements Listener {
         if (p == null) {
             return;
         }
+        removeAllInventories(p.getUniqueId());
         addInventory(p.getUniqueId(), inv);
         Bukkit.getScheduler().runTask(this.plugin, () -> {
             p.openInventory(inv.getInv());
@@ -126,5 +131,29 @@ public class MxInventoryManager implements Listener {
     public void addAndOpenInventory(UUID uuid, MxInventory inv) {
         Player p = Bukkit.getPlayer(uuid);
         addAndOpenInventory(p, inv);
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+        removeAllInventories(e.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        removeAllInventories(e.getPlayer().getUniqueId());
+    }
+
+    public void removeInventory(UUID uuid, MxInventory inv) {
+        if (inventories.containsKey(uuid)) {
+            List<MxInventory> list = inventories.get(uuid);
+            list.remove(inv);
+            if (list.isEmpty()) {
+                inventories.remove(uuid);
+            }
+        }
+    }
+
+    public void removeAllInventories(UUID uuid) {
+        inventories.remove(uuid);
     }
 }
