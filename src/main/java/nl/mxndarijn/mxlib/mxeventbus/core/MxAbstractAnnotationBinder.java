@@ -16,6 +16,12 @@ import java.lang.reflect.Type;
 public abstract class MxAbstractAnnotationBinder<B> {
 
     /**
+     * Default constructor for subclasses.
+     */
+    protected MxAbstractAnnotationBinder() {
+    }
+
+    /**
      * Scans all declared methods of {@code listener} for {@link MxSubscribe} annotations,
      * validates their signatures, and delegates each valid method to
      * {@link #registerHandler(Object, Object, Method)} for bus-specific registration.

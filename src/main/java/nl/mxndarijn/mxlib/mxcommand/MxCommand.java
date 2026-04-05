@@ -33,6 +33,13 @@ public abstract class MxCommand implements CommandExecutor {
     private final MxLanguageManager languageManager;
     private final MxChatPrefixManager chatPrefixManager;
 
+    /**
+     * Constructs a new {@code MxCommand}.
+     *
+     * @param permission            the permission required to execute this command
+     * @param onlyPlayersCanExecute whether only players can execute this command
+     * @param worldFilter           the world filter to apply (may be {@code null})
+     */
     public MxCommand(MxPermissionType permission, boolean onlyPlayersCanExecute, MxWorldFilter worldFilter) {
         this.permission = permission;
         this.onlyPlayersCanExecute = onlyPlayersCanExecute;
@@ -42,6 +49,12 @@ public abstract class MxCommand implements CommandExecutor {
         this.chatPrefixManager = MxChatPrefixManager.getInstance();
     }
 
+    /**
+     * Constructs a new {@code MxCommand} without a world filter.
+     *
+     * @param permission            the permission required to execute this command
+     * @param onlyPlayersCanExecute whether only players can execute this command
+     */
     public MxCommand(MxPermissionType permission, boolean onlyPlayersCanExecute) {
         this(permission, onlyPlayersCanExecute, null);
     }
@@ -128,5 +141,13 @@ public abstract class MxCommand implements CommandExecutor {
         return true;
     }
 
+    /**
+     * Executes the command logic.
+     * @param sender the command sender
+     * @param command the Bukkit command object
+     * @param label the command label used
+     * @param args the command arguments
+     * @throws Exception if an error occurs during execution
+     */
     public abstract void execute(CommandSender sender, Command command, String label, String[] args) throws Exception;
 }

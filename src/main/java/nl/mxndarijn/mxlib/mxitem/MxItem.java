@@ -37,6 +37,7 @@ import java.util.Collections;
  *
  * <p>Interact events are handled via {@link MxInteractPipeline} so that
  * right-clicking air (which the server auto-cancels) is still processed correctly.
+ * @param <T> the type of {@link MxItemContext} used by this item
  */
 public abstract class MxItem<T extends MxItemContext> implements Listener {
 

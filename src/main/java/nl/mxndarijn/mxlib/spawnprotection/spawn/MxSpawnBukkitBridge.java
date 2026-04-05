@@ -30,7 +30,7 @@ import org.bukkit.event.player.*;
  * {@code getPaperEvent().setCancelled(true)} when denied.</p>
  */
 public final class MxSpawnBukkitBridge implements Listener {
-
+    @SuppressWarnings("rawtypes")
     private final MxGlobalEventBus bus;
     private final MxISpawnChatGuard chatGuard;
 
@@ -40,6 +40,7 @@ public final class MxSpawnBukkitBridge implements Listener {
      * @param bus       the {@link MxGlobalEventBus} to post events to; must not be {@code null}
      * @param chatGuard the {@link MxISpawnChatGuard} used to skip players already in a game; must not be {@code null}
      */
+    @SuppressWarnings("rawtypes")
     public MxSpawnBukkitBridge(MxGlobalEventBus bus, MxISpawnChatGuard chatGuard) {
         this.bus = bus;
         this.chatGuard = chatGuard;

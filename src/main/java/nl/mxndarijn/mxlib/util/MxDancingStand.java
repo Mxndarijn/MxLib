@@ -20,15 +20,26 @@ import java.util.function.BiConsumer;
  */
 public class MxDancingStand {
 
+    /**
+     * Enum representing different dance styles for the ArmorStand.
+     */
     public enum DanceType {
-        WAVE,          // flowing arm waves + slow spin
-        ARM_SWING,     // big alternating arm swings + light foot taps
-        ROBOT,         // staccato segmented moves (still smooth here)
-        SALSA,         // hips + shoulders + small spin
-        HEAD_BOP,      // head bops + subtle shoulder sway
-        TWIST,         // torso twist + arm counter-movement
-        T_POSE_SPIN,   // wide arms + continuous spin
-        BREAKDANCE     // faster legs + alternating torso tilt
+        /** Flowing arm waves and a slow spin. */
+        WAVE,
+        /** Large alternating arm swings and light foot taps. */
+        ARM_SWING,
+        /** Staccato, segmented robot-like movements. */
+        ROBOT,
+        /** Hips and shoulders movement with a small spin. */
+        SALSA,
+        /** Head bops and a subtle shoulder sway. */
+        HEAD_BOP,
+        /** Torso twist with arm counter-movement. */
+        TWIST,
+        /** Wide arms and continuous spin. */
+        T_POSE_SPIN,
+        /** Faster legs and alternating torso tilt. */
+        BREAKDANCE
     }
 
     private final Plugin plugin;
@@ -41,12 +52,20 @@ public class MxDancingStand {
     // Precomputed dispatch for each dance type
     private final Map<DanceType, BiConsumer<Long, MxDancingStand>> styles = new EnumMap<>(DanceType.class);
 
+    /**
+     * Constructs a new {@code MxDancingStand}.
+     * @param plugin the plugin instance
+     */
     public MxDancingStand(Plugin plugin) {
         this.plugin = plugin;
         initStyles();
     }
 
-    /** Start dancing on the provided stand with the given type. */
+    /**
+     * Start dancing on the provided stand with the given type.
+     * @param stand the armor stand
+     * @param type the dance type
+     */
     public void start(ArmorStand stand, DanceType type) {
         stop();
         this.stand = stand;
@@ -77,8 +96,18 @@ public class MxDancingStand {
         stand = null;
     }
 
-    /** Optional runtime tweaks */
+    /**
+     * Sets the animation speed.
+     * @param speed the speed (1.0 is normal)
+     * @return this instance for chaining
+     */
     public MxDancingStand setSpeed(double speed) { this.speed = Math.max(0.1, speed); return this; }
+
+    /**
+     * Enables or disables particle effects during the dance.
+     * @param particles true to enable particles
+     * @return this instance for chaining
+     */
     public MxDancingStand setParticles(boolean particles) { this.particles = particles; return this; }
 
     // ====== Internal style implementations ======

@@ -6,11 +6,15 @@ package nl.mxndarijn.mxlib.chatprefix;
  */
 public interface MxChatPrefixType {
     /**
-     * The raw prefix (already formatted, e.g., {@literal "<green>WIDM » <gray>"}).
+     * Returns the raw prefix (already formatted, e.g., {@literal "<green>WIDM » <gray>"}).
+     * @return the prefix string
      */
     String prefix();
 
-    /** The display name or logical identifier (e.g., "WIDM"). */
+    /**
+     * Returns the display name or logical identifier (e.g., "WIDM").
+     * @return the name
+     */
     String getName();
 }
 

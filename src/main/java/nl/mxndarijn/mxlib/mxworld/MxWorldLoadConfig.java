@@ -1,5 +1,6 @@
 package nl.mxndarijn.mxlib.mxworld;
 
+import lombok.Getter;
 import nl.mxndarijn.mxlib.util.MxVoidGenerator;
 import org.bukkit.World;
 import org.bukkit.WorldType;
@@ -18,12 +19,26 @@ import javax.annotation.Nullable;
  *   <li>generateStructures: {@code false}</li>
  *   <li>chunkGenerator: {@link MxVoidGenerator}</li>
  * </ul>
- * </p>
  */
 public final class MxWorldLoadConfig {
 
+    /**
+     * -- GETTER --
+     *  Returns the world environment (NORMAL, NETHER, THE_END).
+     */
+    @Getter
     private final World.Environment environment;
+    /**
+     * -- GETTER --
+     *  Returns the world type (FLAT, NORMAL, LARGE_BIOMES, AMPLIFIED).
+     */
+    @Getter
     private final WorldType worldType;
+    /**
+     * -- GETTER --
+     *  Returns whether structures should be generated.
+     */
+    @Getter
     private final boolean generateStructures;
     @Nullable
     private final ChunkGenerator chunkGenerator;
@@ -35,33 +50,24 @@ public final class MxWorldLoadConfig {
         this.chunkGenerator = builder.chunkGenerator;
     }
 
-    /** Returns the world environment (NORMAL, NETHER, THE_END). */
-    public World.Environment getEnvironment() {
-        return environment;
-    }
-
-    /** Returns the world type (FLAT, NORMAL, LARGE_BIOMES, AMPLIFIED). */
-    public WorldType getWorldType() {
-        return worldType;
-    }
-
-    /** Returns whether structures should be generated. */
-    public boolean isGenerateStructures() {
-        return generateStructures;
-    }
-
-    /** Returns the chunk generator, or {@code null} to use the default. */
+    /**
+     * Returns the chunk generator, or {@code null} to use the default.
+     */
     @Nullable
     public ChunkGenerator getChunkGenerator() {
         return chunkGenerator;
     }
 
-    /** Returns a new {@link Builder} pre-filled with the default values. */
+    /**
+     * Returns a new {@link Builder} pre-filled with the default values.
+     */
     public static Builder builder() {
         return new Builder();
     }
 
-    /** Returns a config with all default values (equivalent to the original hard-coded behaviour). */
+    /**
+     * Returns a config with all default values (equivalent to the original hard-coded behaviour).
+     */
     public static MxWorldLoadConfig defaults() {
         return builder().build();
     }
@@ -74,7 +80,8 @@ public final class MxWorldLoadConfig {
         @Nullable
         private ChunkGenerator chunkGenerator = new MxVoidGenerator();
 
-        private Builder() {}
+        private Builder() {
+        }
 
         public Builder environment(World.Environment environment) {
             this.environment = environment;
@@ -91,7 +98,9 @@ public final class MxWorldLoadConfig {
             return this;
         }
 
-        /** Set to {@code null} to use Bukkit's default chunk generator. */
+        /**
+         * Set to {@code null} to use Bukkit's default chunk generator.
+         */
         public Builder chunkGenerator(@Nullable ChunkGenerator chunkGenerator) {
             this.chunkGenerator = chunkGenerator;
             return this;

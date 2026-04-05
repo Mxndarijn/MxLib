@@ -13,6 +13,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
+/**
+ * Manager for {@link MxInventory} instances.
+ * Tracks open inventories for players and handles inventory events.
+ */
 public class MxInventoryManager implements Listener {
 
     private static MxInventoryManager instance;
@@ -25,6 +29,10 @@ public class MxInventoryManager implements Listener {
 
     }
 
+    /**
+     * Initializes the singleton instance.
+     * @param plugin the {@link JavaPlugin} instance
+     */
     public static void init(JavaPlugin plugin) {
         if( instance != null) {
             throw new IllegalStateException("MxInventoryManager is already initialized!");
@@ -32,6 +40,11 @@ public class MxInventoryManager implements Listener {
         instance = new MxInventoryManager(plugin);
     }
 
+    /**
+     * Gets the singleton instance.
+     * @return the {@code MxInventoryManager} instance
+     * @throws IllegalStateException if not initialized
+     */
     public static MxInventoryManager getInstance() {
         if (instance == null) {
             throw new IllegalStateException("MxInventoryManager is not initialized!");
@@ -39,6 +52,10 @@ public class MxInventoryManager implements Listener {
         return instance;
     }
 
+    /**
+     * Handles inventory clicks and dispatches them to the corresponding {@link MxInventory}.
+     * @param e the inventory click event
+     */
     @EventHandler
     public void InventoryClick(InventoryClickEvent e) {
         if (e.getClickedInventory() == null) {
@@ -76,6 +93,10 @@ public class MxInventoryManager implements Listener {
         }
     }
 
+    /**
+     * Handles inventory closing.
+     * @param e the inventory close event
+     */
     @EventHandler
     void InventoryClose(InventoryCloseEvent e) {
         UUID uuid = e.getPlayer().getUniqueId();
@@ -108,6 +129,11 @@ public class MxInventoryManager implements Listener {
         }
     }
 
+    /**
+     * Registers an {@link MxInventory} for a player.
+     * @param uuid the player's UUID
+     * @param inv the inventory
+     */
     public void addInventory(UUID uuid, MxInventory inv) {
         if (inventories.containsKey(uuid)) {
             inventories.get(uuid).add(inv);
@@ -116,6 +142,12 @@ public class MxInventoryManager implements Listener {
         }
     }
 
+    /**
+     * Adds an inventory for a player and opens it immediately.
+     * Clears all previous tracked inventories for the player.
+     * @param p the player
+     * @param inv the inventory
+     */
     public void addAndOpenInventory(Player p, MxInventory inv) {
         if (p == null) {
             return;
@@ -128,21 +160,39 @@ public class MxInventoryManager implements Listener {
 
     }
 
+    /**
+     * Adds an inventory for a player and opens it immediately.
+     * @param uuid the player's UUID
+     * @param inv the inventory
+     */
     public void addAndOpenInventory(UUID uuid, MxInventory inv) {
         Player p = Bukkit.getPlayer(uuid);
         addAndOpenInventory(p, inv);
     }
 
+    /**
+     * Clears tracked inventories when a player joins.
+     * @param e the player join event
+     */
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         removeAllInventories(e.getPlayer().getUniqueId());
     }
 
+    /**
+     * Clears tracked inventories when a player quits.
+     * @param e the player quit event
+     */
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         removeAllInventories(e.getPlayer().getUniqueId());
     }
 
+    /**
+     * Removes a specific inventory for a player.
+     * @param uuid the player's UUID
+     * @param inv the inventory
+     */
     public void removeInventory(UUID uuid, MxInventory inv) {
         if (inventories.containsKey(uuid)) {
             List<MxInventory> list = inventories.get(uuid);
@@ -153,6 +203,10 @@ public class MxInventoryManager implements Listener {
         }
     }
 
+    /**
+     * Clears all tracked inventories for a player.
+     * @param uuid the player's UUID
+     */
     public void removeAllInventories(UUID uuid) {
         inventories.remove(uuid);
     }

@@ -31,6 +31,12 @@ import java.util.*;
  */
 public abstract class MxAbstractEventBus<E extends MxBaseEvent, C extends MxBaseContext<E>, H extends MxBaseHandlerEntry<E, ?>> {
 
+    /**
+     * Default constructor for subclasses.
+     */
+    protected MxAbstractEventBus() {
+    }
+
     /** Maps event class → ordered list of handler entries. */
     private final Map<Class<? extends E>, List<H>> registry = new HashMap<>();
 

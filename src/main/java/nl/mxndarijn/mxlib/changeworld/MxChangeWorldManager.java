@@ -15,6 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Manager for world change events.
+ * Registers and notifies {@link MxChangeWorld} listeners when players move between worlds.
+ */
 public class MxChangeWorldManager implements Listener {
 
     private static MxChangeWorldManager instance;
@@ -30,10 +34,19 @@ public class MxChangeWorldManager implements Listener {
 
     }
 
+    /**
+     * Initializes the singleton instance.
+     * @param plugin the {@link JavaPlugin} instance
+     */
     public static void init(JavaPlugin plugin) {
         instance = new MxChangeWorldManager(plugin);
     }
 
+    /**
+     * Gets the singleton instance.
+     * @return the {@code MxChangeWorldManager} instance
+     * @throws IllegalStateException if not initialized
+     */
     public static MxChangeWorldManager getInstance() {
         if (instance == null) {
             throw new IllegalStateException("ChangeWorldManager is not initialized!");
@@ -41,6 +54,10 @@ public class MxChangeWorldManager implements Listener {
         return instance;
     }
 
+    /**
+     * Event handler for {@link PlayerChangedWorldEvent}.
+     * @param e the event
+     */
     @EventHandler
     public void changeWorld(PlayerChangedWorldEvent e) {
         UUID from = e.getFrom().getUID();
@@ -64,6 +81,10 @@ public class MxChangeWorldManager implements Listener {
         }
     }
 
+    /**
+     * Event handler for {@link WorldUnloadEvent}.
+     * @param e the event
+     */
     @EventHandler
     public void worldUnload(WorldUnloadEvent e) {
         UUID worldUID = e.getWorld().getUID();
@@ -74,16 +95,29 @@ public class MxChangeWorldManager implements Listener {
         }
     }
 
+    /**
+     * Adds a listener for a specific world.
+     * @param uid the world UUID
+     * @param changeWorld the listener
+     */
     public void addWorld(UUID uid, MxChangeWorld changeWorld) {
-        List<MxChangeWorld> list = worlds.containsKey(uid) ? worlds.get(uid) : new ArrayList<>();
+        List<MxChangeWorld> list = worlds.getOrDefault(uid, new ArrayList<>());
         list.add(changeWorld);
         worlds.put(uid, list);
     }
 
+    /**
+     * Adds a listener that triggers for all world changes.
+     * @param changeWorld the listener
+     */
     public void addUnspecificWorld(MxChangeWorld changeWorld) {
         unspecificWorlds.add(changeWorld);
     }
 
+    /**
+     * Removes all listeners for a specific world.
+     * @param uid the world UUID
+     */
     public void removeWorld(UUID uid) {
         worlds.remove(uid);
     }

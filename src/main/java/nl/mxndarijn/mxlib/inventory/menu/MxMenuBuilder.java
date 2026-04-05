@@ -33,6 +33,11 @@ public class MxMenuBuilder<T extends MxInventoryBuilder<T>> extends MxInventoryB
     /** Slot index for the "previous" item. */
     protected int previousItemStackSlot;
 
+    /**
+     * Constructs a new {@code MxMenuBuilder}.
+     * @param name the inventory name
+     * @param slotType the slot type
+     */
     public MxMenuBuilder(String name, MxInventorySlots slotType) {
         super(name, slotType);
         this.previousMenu = null;
@@ -43,29 +48,49 @@ public class MxMenuBuilder<T extends MxInventoryBuilder<T>> extends MxInventoryB
         this.previousItemStackSlot = slotType.slots - 9;
     }
 
-    /** Sets the menu to navigate back to. */
+    /**
+     * Sets the menu to navigate back to.
+     * @param menu the previous menu
+     * @return this instance for chaining
+     */
     @SuppressWarnings("unchecked")
     public T setPrevious(MxInventory menu) {
         this.previousMenu = menu;
         return (T) this;
     }
 
-    /** Sets the item used for the "previous" action. */
+    /**
+     * Sets the item used for the "previous" action.
+     * @param previousItem the item stack
+     * @return this instance for chaining
+     */
     @SuppressWarnings("unchecked")
     public T setPreviousItemStack(ItemStack previousItem) {
         this.previousItem = previousItem;
         return (T) this;
     }
 
-    /** Sets the slot index where the "previous" item is placed. */
+    /**
+     * Sets the slot index where the "previous" item is placed.
+     * @param slot the slot index
+     * @return this instance for chaining
+     */
     @SuppressWarnings("unchecked")
     public T setPreviousItemStackSlot(int slot) {
         this.previousItemStackSlot = slot;
         return (T) this;
     }
 
+    /**
+     * Gets the previous menu if set.
+     * @return an {@link Optional} containing the previous menu
+     */
     public Optional<MxInventory> getPreviousMenu() { return Optional.ofNullable(previousMenu); }
 
+    /**
+     * Builds the {@link MxInventory} with navigation logic.
+     * @return the built inventory
+     */
     @Override
     public MxInventory build() {
         if (previousMenu != null && previousItem != null) {

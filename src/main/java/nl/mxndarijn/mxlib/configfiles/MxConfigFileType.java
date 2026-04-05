@@ -1,7 +1,25 @@
 package nl.mxndarijn.mxlib.configfiles;
 
+/**
+ * Interface representing a configuration file type.
+ * Used for defining file names, paths, and autosave behavior.
+ */
 public interface MxConfigFileType {
-    String fileName();   // bv. "config.yml"
-    String path();       // bv. "config.yml" of "scoreboards/scoreboard_map.yml"
-    boolean autoSave();  // of dit bestand mee moet in saveAll()
+    /**
+     * Returns the file name (e.g., "config.yml").
+     * @return the file name
+     */
+    String fileName();
+
+    /**
+     * Returns the relative path to the file (e.g., "config.yml" or "scoreboards/map.yml").
+     * @return the path
+     */
+    String path();
+
+    /**
+     * Returns whether this file should be included in {@code saveAll()} operations.
+     * @return true if it should autosave
+     */
+    boolean autoSave();
 }

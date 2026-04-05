@@ -17,7 +17,10 @@ public final class MxChatPrefixManager {
         registerAll(MxStandardChatPrefix.class);
     }
 
-    /** Singleton access. */
+    /**
+     * Singleton access.
+     * @return the singleton instance
+     */
     public static MxChatPrefixManager getInstance() {
         if (instance == null) {
             instance = new MxChatPrefixManager();
@@ -38,12 +41,21 @@ public final class MxChatPrefixManager {
         }
     }
 
-    /** Get a prefix by name (case-insensitive). */
+    /**
+     * Finds a prefix by type.
+     * @param type the prefix type to find
+     * @return an {@link Optional} containing the prefix if found
+     */
     public Optional<MxChatPrefixType> find(MxChatPrefixType type) {
         if (type.getName() == null) return Optional.empty();
         return Optional.ofNullable(prefixes.get(type.getName().toLowerCase(Locale.ROOT)));
     }
 
+    /**
+     * Finds a prefix by type, throwing an exception if not found.
+     * @param type the prefix type to find
+     * @return the prefix
+     */
     public MxChatPrefixType requireFind(MxChatPrefixType type) {
         return prefixes.get(type.getName().toLowerCase(Locale.ROOT));
     }

@@ -17,11 +17,19 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Manager for {@link MxWorld} instances.
+ * Handles loading, unloading, duplicating, and deleting worlds.
+ */
 public class MxAtlas {
     private static JavaPlugin plugin;
     private static MxAtlas instance;
     private final ArrayList<MxWorld> worlds;
 
+    /**
+     * Sets the plugin instance for MxAtlas.
+     * @param plugin the {@link JavaPlugin} instance
+     */
     public static void setPlugin(JavaPlugin plugin) {
         MxAtlas.plugin = plugin;
     }
@@ -32,6 +40,11 @@ public class MxAtlas {
         setPlugin(plugin);
     }
 
+    /**
+     * Gets the singleton instance of MxAtlas.
+     * @return the MxAtlas instance
+     * @throws IllegalStateException if MxAtlas is not initialized
+     */
     public static MxAtlas getInstance() {
         if (instance == null) {
             throw new IllegalStateException("MxAtlas is not initialized!");
@@ -39,6 +52,11 @@ public class MxAtlas {
         return instance;
     }
 
+    /**
+     * Initializes the MxAtlas singleton.
+     * @param plugin the {@link JavaPlugin} instance
+     * @throws IllegalStateException if MxAtlas is already initialized
+     */
     public static void init(JavaPlugin plugin) {
         if(instance != null) {
             throw new IllegalStateException("MxAtlas is already initialized!");
@@ -48,6 +66,11 @@ public class MxAtlas {
         }
     }
 
+    /**
+     * Finds an {@link MxWorld} by its name.
+     * @param name the name of the world
+     * @return an {@link Optional} containing the world if found
+     */
     public Optional<MxWorld> getMxWorld(String name) {
         for (MxWorld w : worlds) {
             if (w.getName().equals(name)) {
@@ -57,6 +80,11 @@ public class MxAtlas {
         return Optional.empty();
     }
 
+    /**
+     * Finds an {@link MxWorld} by its UUID.
+     * @param uuid the UUID of the world
+     * @return an {@link Optional} containing the world if found
+     */
     public Optional<MxWorld> getMxWorld(UUID uuid) {
         for (MxWorld w : worlds) {
             if (w.getUUID().equalsIgnoreCase(uuid.toString())) {
@@ -66,18 +94,39 @@ public class MxAtlas {
         return Optional.empty();
     }
 
+    /**
+     * Adds an {@link MxWorld} to the manager's tracking list.
+     * @param world the world to add
+     * @return true if added successfully
+     */
     public boolean addMxWorld(MxWorld world) {
         return worlds.add(world);
     }
 
+    /**
+     * Removes an {@link MxWorld} from the manager's tracking list.
+     * @param world the world to remove
+     * @return true if removed successfully
+     */
     public boolean removeMxWorld(MxWorld world) {
         return worlds.remove(world);
     }
 
+    /**
+     * Loads an {@link MxWorld} using the default configuration.
+     * @param mxWorld the world to load
+     * @return a {@link CompletableFuture} completing to true if success
+     */
     public CompletableFuture<Boolean> loadMxWorld(MxWorld mxWorld) {
         return loadMxWorld(mxWorld, MxWorldLoadConfig.defaults());
     }
 
+    /**
+     * Loads an {@link MxWorld} with custom configuration.
+     * @param mxWorld the world to load
+     * @param config the load configuration
+     * @return a {@link CompletableFuture} completing to true if success
+     */
     public CompletableFuture<Boolean> loadMxWorld(MxWorld mxWorld, MxWorldLoadConfig config) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
 
@@ -145,6 +194,12 @@ public class MxAtlas {
     }
 
 
+    /**
+     * Unloads an {@link MxWorld}.
+     * @param mxWorld the world to unload
+     * @param save whether to save the world
+     * @return true if unloaded successfully
+     */
     public boolean unloadMxWorld(MxWorld mxWorld, boolean save) {
         if (!mxWorld.isLoaded())
             return true;
@@ -166,6 +221,11 @@ public class MxAtlas {
         return unloaded;
     }
 
+    /**
+     * Deletes an {@link MxWorld} from disk.
+     * @param mxWorld the world to delete
+     * @return true if deleted successfully
+     */
     public boolean deleteMxWorld(MxWorld mxWorld) {
         if (mxWorld.isLoaded()) {
             if (!unloadMxWorld(mxWorld, false)) {
@@ -183,6 +243,12 @@ public class MxAtlas {
         return true;
     }
 
+    /**
+     * Duplicates an {@link MxWorld} to a new directory.
+     * @param worldToClone the world to clone
+     * @param dir the parent directory for the clone
+     * @return an {@link Optional} containing the new world if successful
+     */
     public Optional<MxWorld> duplicateMxWorld(MxWorld worldToClone, File dir) {
         UUID uuid = UUID.randomUUID();
 
@@ -203,12 +269,20 @@ public class MxAtlas {
         return Optional.of(mxWorld);
     }
 
+    /**
+     * Unloads all tracked worlds and saves them.
+     */
     public void unloadAll() {
         worlds.forEach(w -> {
             unloadMxWorld(w, true);
         });
     }
 
+    /**
+     * Scans a directory for folders containing {@code uid.dat} and loads them as {@link MxWorld}s.
+     * @param dir the directory to scan
+     * @return a list of loaded worlds
+     */
     public List<MxWorld> loadFolder(File dir) {
         List<MxWorld> list = new ArrayList<>();
         for (File file : Objects.requireNonNull(dir.listFiles())) {
@@ -227,6 +301,11 @@ public class MxAtlas {
         return list;
     }
 
+    /**
+     * Loads a directory as an {@link MxWorld}.
+     * @param dir the world directory
+     * @return an {@link Optional} containing the loaded world
+     */
     public Optional<MxWorld> loadWorld(File dir) {
         MxWorld mxWorld = new MxWorld(dir.getName(), dir.getName(), dir);
         worlds.add(mxWorld);
