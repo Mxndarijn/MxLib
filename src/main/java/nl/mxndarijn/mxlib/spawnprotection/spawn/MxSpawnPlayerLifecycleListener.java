@@ -1,6 +1,6 @@
 package nl.mxndarijn.mxlib.spawnprotection.spawn;
 
-import nl.mxndarijn.mxlib.logger.MxLogger;
+
 import nl.mxndarijn.mxlib.mxeventbus.core.MxCancellationState;
 import nl.mxndarijn.mxlib.mxeventbus.core.MxPriority;
 import nl.mxndarijn.mxlib.mxeventbus.core.MxSubscribe;

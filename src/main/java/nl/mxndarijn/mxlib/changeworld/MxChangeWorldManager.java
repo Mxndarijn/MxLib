@@ -65,6 +65,7 @@ public class MxChangeWorldManager implements Listener {
         UUID to = e.getPlayer().getWorld().getUID();
         World toWorld = Bukkit.getWorld(to);
         if (!from.equals(to)) {
+            MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.CHANGEWORLD_MANAGER, "Player " + e.getPlayer().getName() + " changed world from " + e.getFrom().getName() + " to " + e.getPlayer().getWorld().getName());
             unspecificWorlds.forEach(mxChangeWorld -> {
                 mxChangeWorld.leave(e.getPlayer(), e.getFrom(), e);
                 mxChangeWorld.enter(e.getPlayer(), toWorld, e);
