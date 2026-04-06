@@ -1,5 +1,6 @@
 package nl.mxndarijn.mxlib.spawnprotection.spawn;
 
+import nl.mxndarijn.mxlib.logger.MxLogger;
 import nl.mxndarijn.mxlib.mxeventbus.core.MxSubscribe;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxGlobalEventContext;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxWorldType;
@@ -54,10 +55,13 @@ public final class MxSpawnPlayerLifecycleListener extends MxGlobalEventListener 
     @MxSubscribe
     public void initializeJoiningPlayer(MxGlobalEventContext<MxSpawnPlayerJoinEvent, MxWorldType> ctx) {
         Player player = ctx.event().getPlayer();
+
+
+        MxLogger.logMessage("Player " + player.getName() + " joined the server.: " + provider.isPlayerInGame(player.getUniqueId()));
+        if (provider.isPlayerInGame(player.getUniqueId())) return;
+
         MxSupplierScoreBoard sb = provider.createScoreboard(player);
         scoreboards.put(player.getUniqueId(), sb);
-
-        if (provider.isPlayerInGame(player.getUniqueId())) return;
 
         World spawn = provider.getSpawnWorld();
         if (player.getWorld() == spawn) {

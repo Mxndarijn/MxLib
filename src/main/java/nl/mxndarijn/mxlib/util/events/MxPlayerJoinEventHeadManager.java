@@ -29,10 +29,10 @@ public class MxPlayerJoinEventHeadManager implements Listener {
                 ItemStack headItem = new ItemStack(Material.PLAYER_HEAD);
                 SkullMeta skullMeta = (SkullMeta) headItem.getItemMeta();
 
-                // Stel de eigenaar van de skull in op de speler
+                // Set the owner of the skull to the player
                 skullMeta.setOwningPlayer(e.getPlayer());
 
-                // Stel de gewijzigde SkullMeta in op het hoofditem
+                // Set the modified SkullMeta on the head item
                 headItem.setItemMeta(skullMeta);
 
                 MxHeadManager.getInstance().storeSkullTexture(headItem, e.getPlayer().getUniqueId().toString(), e.getPlayer().getName(), MxHeadsType.PLAYER);
