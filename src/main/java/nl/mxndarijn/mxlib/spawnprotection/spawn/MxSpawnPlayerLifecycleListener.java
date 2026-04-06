@@ -1,9 +1,6 @@
 package nl.mxndarijn.mxlib.spawnprotection.spawn;
 
 
-import nl.mxndarijn.mxlib.logger.MxLogger;
-import nl.mxndarijn.mxlib.mxeventbus.core.MxCancellationState;
-import nl.mxndarijn.mxlib.mxeventbus.core.MxPriority;
 import nl.mxndarijn.mxlib.mxeventbus.core.MxSubscribe;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxGlobalEventContext;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxWorldType;
@@ -35,17 +32,21 @@ public final class MxSpawnPlayerLifecycleListener extends MxGlobalEventListener 
     /** Spawn scoreboards keyed by player UUID. */
     private final HashMap<UUID, MxSupplierScoreBoard> scoreboards;
     private final MxISpawnLifecycleProvider provider;
+    private final MxISpawnWorldChangeProvider worldChangeProvider;
 
     /**
      * Constructs a new {@code MxSpawnPlayerLifecycleListener}.
      *
-     * @param scoreboards the shared scoreboard map owned by the spawn manager
-     * @param provider    the {@link MxISpawnLifecycleProvider} supplying lifecycle dependencies
+     * @param scoreboards         the shared scoreboard map owned by the spawn manager
+     * @param provider            the {@link MxISpawnLifecycleProvider} supplying lifecycle dependencies
+     * @param worldChangeProvider the {@link MxISpawnWorldChangeProvider} supplying world-change dependencies
      */
     public MxSpawnPlayerLifecycleListener(HashMap<UUID, MxSupplierScoreBoard> scoreboards,
-                                        MxISpawnLifecycleProvider provider) {
+                                        MxISpawnLifecycleProvider provider,
+                                        MxISpawnWorldChangeProvider worldChangeProvider) {
         this.scoreboards = scoreboards;
         this.provider = provider;
+        this.worldChangeProvider = worldChangeProvider;
     }
 
     /**
@@ -63,7 +64,7 @@ public final class MxSpawnPlayerLifecycleListener extends MxGlobalEventListener 
 
         World spawn = provider.getSpawnWorld();
         if (player.getWorld().getUID().equals(spawn.getUID())) {
-            provider.callPlayerChangedWorldEvent(player, player.getWorld());
+            worldChangeProvider.applySpawnEnterState(player);
         }
 
         provider.teleportToSpawn(player);

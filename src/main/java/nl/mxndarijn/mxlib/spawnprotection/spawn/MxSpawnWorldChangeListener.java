@@ -1,8 +1,6 @@
 package nl.mxndarijn.mxlib.spawnprotection.spawn;
 
 import nl.mxndarijn.mxlib.changeworld.MxChangeWorld;
-import nl.mxndarijn.mxlib.mxscoreboard.MxSupplierScoreBoard;
-import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -40,23 +38,8 @@ public final class MxSpawnWorldChangeListener implements MxChangeWorld {
      */
     @Override
     public void enter(Player p, World w, PlayerChangedWorldEvent e) {
-        p.closeInventory();
-        p.getInventory().clear();
-        p.setGameMode(GameMode.ADVENTURE);
-        p.setGlowing(false);
-        provider.resetMaxHealth(p);
-        p.setFoodLevel(20);
-        p.setAllowFlight(false);
-        p.setFlying(false);
-        provider.showPlayerForAll(p);
-
-        p.getActivePotionEffects().forEach(effect -> p.removePotionEffect(effect.getType()));
-
+        provider.applySpawnEnterState(p);
         provider.teleportToSpawn(p);
-        provider.giveSpawnItems(p);
-
-        MxSupplierScoreBoard sb = provider.getScoreboard(p.getUniqueId());
-        provider.setPlayerScoreboard(p.getUniqueId(), sb);
     }
 
     /**
@@ -68,12 +51,7 @@ public final class MxSpawnWorldChangeListener implements MxChangeWorld {
      */
     @Override
     public void leave(Player p, World w, PlayerChangedWorldEvent e) {
-        p.closeInventory();
-        p.getInventory().clear();
-        p.getActivePotionEffects().forEach(effect -> p.removePotionEffect(effect.getType()));
-
-        MxSupplierScoreBoard sb = provider.getScoreboard(p.getUniqueId());
-        provider.removePlayerScoreboard(p.getUniqueId(), sb);
+        provider.applySpawnLeaveState(p);
     }
 
     /**

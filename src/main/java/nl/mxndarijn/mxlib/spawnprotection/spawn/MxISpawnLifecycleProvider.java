@@ -45,14 +45,6 @@ public interface MxISpawnLifecycleProvider {
      */
     void removePlayerFromAllQueues(UUID uuid);
 
-    /**
-     * Fires a {@link org.bukkit.event.player.PlayerChangedWorldEvent} for the given player.
-     *
-     * @param player   the player who changed worlds; must not be {@code null}
-     * @param from     the world the player came from; must not be {@code null}
-     */
-    void callPlayerChangedWorldEvent(Player player, World from);
-
     World getSpawnWorld();
 }
 
