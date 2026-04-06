@@ -205,7 +205,6 @@ public final class MxSpawnBukkitBridge implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        MxLogger.logMessage("Player " + e.getPlayer().getName() + " joined the server.: " + chatGuard.isPlayerInGame(e.getPlayer().getUniqueId()));
         bus.post(new MxSpawnPlayerJoinEvent(e.getPlayer(), e));
     }
 

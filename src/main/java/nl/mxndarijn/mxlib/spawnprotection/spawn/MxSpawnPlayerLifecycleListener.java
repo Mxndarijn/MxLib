@@ -55,13 +55,9 @@ public final class MxSpawnPlayerLifecycleListener extends MxGlobalEventListener 
      *
      * @param ctx the event context wrapping a {@link MxSpawnPlayerJoinEvent}
      */
-    @MxSubscribe(priority = MxPriority.MONITOR)
+    @MxSubscribe()
     public void initializeJoiningPlayer(MxGlobalEventContext<MxSpawnPlayerJoinEvent, MxWorldType> ctx) {
         Player player = ctx.event().getPlayer();
-        MxLogger.logMessage("Canceled: " + player.getName() + " " + ctx.isCancelled());
-        if(ctx.isCancelled())
-            return;
-
         MxSupplierScoreBoard sb = provider.createScoreboard(player);
         scoreboards.put(player.getUniqueId(), sb);
 
@@ -70,16 +66,7 @@ public final class MxSpawnPlayerLifecycleListener extends MxGlobalEventListener 
             provider.callPlayerChangedWorldEvent(player, player.getWorld());
         }
 
-//        provider.teleportToSpawn(player);
-    }
-
-    @MxSubscribe
-    public void cancelPlayerLoadSpawnIfPlayerIsInGame(MxGlobalEventContext<MxSpawnPlayerJoinEvent, MxWorldType> ctx) {
-        Player player = ctx.event().getPlayer();
-
-        if (provider.isPlayerInGame(player.getUniqueId())) {
-            ctx.submitVerdict(MxCancellationState.HARD_DENY);
-        }
+        provider.teleportToSpawn(player);
     }
 
     /**
