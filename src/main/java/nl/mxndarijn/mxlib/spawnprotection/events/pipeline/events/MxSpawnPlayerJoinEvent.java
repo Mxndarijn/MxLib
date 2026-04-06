@@ -1,6 +1,7 @@
 package nl.mxndarijn.mxlib.spawnprotection.events.pipeline.events;
 
 
+import lombok.Getter;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxGlobalEvent;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxWorldType;
 import nl.mxndarijn.mxlib.spawnprotection.events.base.MxSpawnEventRegistry;
@@ -12,9 +13,22 @@ import org.bukkit.event.player.PlayerJoinEvent;
  *
  * <p>The underlying {@link PlayerJoinEvent} is exposed so handlers can react to the join.</p>
  */
+@Getter
 public final class MxSpawnPlayerJoinEvent extends MxGlobalEvent<MxWorldType> {
 
+    /**
+     * -- GETTER --
+     *  Returns the player who joined.
+     *
+     * @return the player; never {@code null}
+     */
     private final Player player;
+    /**
+     * -- GETTER --
+     *  Returns the underlying Bukkit player join event.
+     *
+     * @return the paper event; never {@code null}
+     */
     private final PlayerJoinEvent paperEvent;
 
     /**
@@ -29,23 +43,6 @@ public final class MxSpawnPlayerJoinEvent extends MxGlobalEvent<MxWorldType> {
         this.paperEvent = paperEvent;
     }
 
-    /**
-     * Returns the player who joined.
-     *
-     * @return the player; never {@code null}
-     */
-    public Player getPlayer() {
-        return player;
-    }
-
-    /**
-     * Returns the underlying Bukkit player join event.
-     *
-     * @return the paper event; never {@code null}
-     */
-    public PlayerJoinEvent getPaperEvent() {
-        return paperEvent;
-    }
 }
 
 

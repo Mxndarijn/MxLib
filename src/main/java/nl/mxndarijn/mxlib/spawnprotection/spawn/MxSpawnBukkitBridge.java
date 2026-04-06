@@ -30,8 +30,8 @@ import org.bukkit.event.player.*;
  * in the MONITOR phase, which reads the resolved verdict from the context and calls
  * {@code getPaperEvent().setCancelled(true)} when denied.</p>
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public final class MxSpawnBukkitBridge implements Listener {
-    @SuppressWarnings("rawtypes")
     private final MxGlobalEventBus bus;
     private final MxISpawnChatGuard chatGuard;
 
@@ -41,7 +41,6 @@ public final class MxSpawnBukkitBridge implements Listener {
      * @param bus       the {@link MxGlobalEventBus} to post events to; must not be {@code null}
      * @param chatGuard the {@link MxISpawnChatGuard} used to skip players already in a game; must not be {@code null}
      */
-    @SuppressWarnings("rawtypes")
     public MxSpawnBukkitBridge(MxGlobalEventBus bus, MxISpawnChatGuard chatGuard) {
         this.bus = bus;
         this.chatGuard = chatGuard;

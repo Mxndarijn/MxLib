@@ -9,8 +9,19 @@ import org.bukkit.World;
 import org.bukkit.GameRule;
 import org.bukkit.configuration.ConfigurationSection;
 
+/**
+ * Utility class for applying game rules to a {@link org.bukkit.World} from a YAML configuration section.
+ */
 public final class MxGameRuleUtil {
 
+    /**
+     * Applies all game rules defined in the given {@link ConfigurationSection} to the specified world.
+     * Supports both {@code Boolean} and {@code Integer} game rule types.
+     * Unknown or invalid game rule keys are logged and skipped.
+     *
+     * @param world             the world to apply game rules to
+     * @param gamerulesSection  the configuration section containing game rule key-value pairs
+     */
     public static void applyGameRules(World world, ConfigurationSection gamerulesSection) {
         if (gamerulesSection == null) return;
 

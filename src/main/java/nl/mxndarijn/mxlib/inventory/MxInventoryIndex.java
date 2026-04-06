@@ -2,6 +2,10 @@ package nl.mxndarijn.mxlib.inventory;
 
 import lombok.Getter;
 
+/**
+ * Predefined slot index ranges for common inventory row layouts.
+ * Each constant defines a {@code beginIndex} and {@code endIndex} (inclusive) for a range of slots.
+ */
 @Getter
 public enum MxInventoryIndex {
     ROW_ONE_ONLY(0, 8),

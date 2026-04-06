@@ -15,6 +15,12 @@ public enum MxHeadsType {
         this.type = type;
     }
 
+    /**
+     * Returns the {@code MxHeadsType} matching the given type string, case-insensitively.
+     *
+     * @param name the type string to look up
+     * @return an {@link Optional} containing the matching type, or empty if not found
+     */
     public static Optional<MxHeadsType> getTypeFromName(String name) {
         for (MxHeadsType t : values()) {
             if (t.getType().equalsIgnoreCase(name)) {

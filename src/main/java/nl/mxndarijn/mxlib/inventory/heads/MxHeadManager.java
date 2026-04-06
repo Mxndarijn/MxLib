@@ -23,10 +23,19 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Singleton manager for player and custom skull heads.
+ * Handles storing, loading, and periodically refreshing head texture data
+ * from the HEAD_DATA config file and the Mojang session server.
+ */
 public class MxHeadManager {
     private static MxHeadManager instance;
     private final FileConfiguration fileConfiguration;
 
+    /**
+     * Constructs a new {@code MxHeadManager} and schedules a periodic task
+     * to refresh up to 40 player skull textures older than 2 days.
+     */
     public MxHeadManager() {
         fileConfiguration = MxConfigService.getInstance().get(MxStandardConfigFile.HEAD_DATA).getCfg();
         long period = 30L * 60L * 20L; // 30 minutes in ticks
@@ -82,6 +91,11 @@ public class MxHeadManager {
         }, delay, period);
     }
 
+    /**
+     * Returns the singleton instance, creating it if necessary.
+     *
+     * @return the {@code MxHeadManager} instance
+     */
     public static MxHeadManager getInstance() {
         if (instance == null) {
             instance = new MxHeadManager();
@@ -89,6 +103,12 @@ public class MxHeadManager {
         return instance;
     }
 
+    /**
+     * Returns the stored texture value for the head with the given name.
+     *
+     * @param name the head key
+     * @return an {@link Optional} containing the texture value, or empty if not found
+     */
     public Optional<String> getTextureValue(String name) {
         Optional<MxHeadSection> optionalSection = MxHeadSection.loadHead(name);
         if (optionalSection.isPresent()) {
@@ -98,10 +118,24 @@ public class MxHeadManager {
         return Optional.empty();
     }
 
+    /**
+     * Returns all head keys stored in the HEAD_DATA config.
+     *
+     * @return a list of all head keys
+     */
     public List<String> getAllHeadKeys() {
         return new ArrayList<>(fileConfiguration.getKeys(false));
     }
 
+    /**
+     * Stores the skull texture from the given item stack under the specified name.
+     *
+     * @param itemStack   the skull item to extract the texture from
+     * @param textureName the key to store the texture under
+     * @param displayName the display name for the head entry
+     * @param type        the head type ({@link MxHeadsType#PLAYER} or {@link MxHeadsType#MANUALLY_ADDED})
+     * @return {@code true} if the texture was stored successfully, {@code false} otherwise
+     */
     public boolean storeSkullTexture(ItemStack itemStack, String textureName, String displayName, MxHeadsType type) {
         Optional<MxHeadSection> optionalSection = MxHeadSection.loadHead(textureName);
         Optional<UUID> ownerOptional = Optional.empty();
@@ -195,12 +229,23 @@ public class MxHeadManager {
         }
     }
 
+    /**
+     * Removes the head entry with the given key from the HEAD_DATA config.
+     *
+     * @param key the head key to remove
+     */
     public void removeHead(String key) {
         if (fileConfiguration.contains(key)) {
             fileConfiguration.set(key, null);
         }
     }
 
+    /**
+     * Returns the {@link MxHeadSection} for the given key.
+     *
+     * @param key the head key
+     * @return an {@link Optional} containing the section, or empty if not found
+     */
     public Optional<MxHeadSection> getHeadSection(String key) {
         return MxHeadSection.loadHead(key);
     }

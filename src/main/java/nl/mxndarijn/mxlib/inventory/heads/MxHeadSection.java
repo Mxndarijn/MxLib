@@ -152,13 +152,16 @@ public class MxHeadSection {
     }
 
 
+    /** Optional view for nullable type. */
     public Optional<MxHeadsType> getTypeOptional() {
         return Optional.ofNullable(type);
     }
 
+    /** Optional view for nullable texture value. */
     public Optional<String> getValueOptional() {
         return Optional.ofNullable(value);
     }
+    /** Optional view for nullable display name. */
     public Optional<String> getNameOptional() {
         return Optional.ofNullable(name);
     }

@@ -31,6 +31,11 @@ public class MxInteractPipeline implements Listener {
         MxLib.getPlugin().getServer().getPluginManager().registerEvents(this, MxLib.getPlugin());
     }
 
+    /**
+     * Returns the singleton instance, creating and registering it if necessary.
+     *
+     * @return the {@code MxInteractPipeline} instance
+     */
     public static MxInteractPipeline getInstance() {
         if (instance == null) {
             instance = new MxInteractPipeline();
@@ -68,6 +73,12 @@ public class MxInteractPipeline implements Listener {
         subscribers.removeIf(e -> e.subscriber == subscriber);
     }
 
+    /**
+     * Bukkit event handler that wraps the {@link PlayerInteractEvent} and dispatches it
+     * to all registered subscribers in priority order.
+     *
+     * @param e the Bukkit interact event
+     */
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerInteract(PlayerInteractEvent e) {
         MxPlayerInteractEvent mxEvent = new MxPlayerInteractEvent(e, e.getPlayer());

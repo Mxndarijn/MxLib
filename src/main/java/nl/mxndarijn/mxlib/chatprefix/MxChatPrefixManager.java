@@ -34,7 +34,12 @@ public final class MxChatPrefixManager {
         prefixes.put(prefix.getName().toLowerCase(Locale.ROOT), prefix);
     }
 
-    /** Register all enum constants of an enum implementing MxChatPrefixType. */
+    /**
+     * Registers all enum constants of an enum implementing {@link MxChatPrefixType}.
+     *
+     * @param <E>       the enum type
+     * @param enumClass the enum class whose constants should be registered
+     */
     public <E extends Enum<E> & MxChatPrefixType> void registerAll(Class<E> enumClass) {
         for (E e : enumClass.getEnumConstants()) {
             register(e);
