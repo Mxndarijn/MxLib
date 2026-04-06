@@ -1,6 +1,7 @@
 package nl.mxndarijn.mxlib.spawnprotection.spawn;
 
 
+import nl.mxndarijn.mxlib.logger.MxLogger;
 import nl.mxndarijn.mxlib.mxeventbus.core.MxCancellationState;
 import nl.mxndarijn.mxlib.mxeventbus.core.MxPriority;
 import nl.mxndarijn.mxlib.mxeventbus.core.MxSubscribe;
@@ -57,6 +58,7 @@ public final class MxSpawnPlayerLifecycleListener extends MxGlobalEventListener 
     @MxSubscribe(priority = MxPriority.MONITOR)
     public void initializeJoiningPlayer(MxGlobalEventContext<MxSpawnPlayerJoinEvent, MxWorldType> ctx) {
         Player player = ctx.event().getPlayer();
+        MxLogger.logMessage("Canceled: " + player.getName() + " " + ctx.isCancelled());
         if(ctx.isCancelled())
             return;
 
@@ -64,11 +66,11 @@ public final class MxSpawnPlayerLifecycleListener extends MxGlobalEventListener 
         scoreboards.put(player.getUniqueId(), sb);
 
         World spawn = provider.getSpawnWorld();
-        if (player.getWorld() == spawn) {
+        if (player.getWorld().getUID().equals(spawn.getUID())) {
             provider.callPlayerChangedWorldEvent(player, player.getWorld());
         }
 
-        provider.teleportToSpawn(player);
+//        provider.teleportToSpawn(player);
     }
 
     @MxSubscribe
