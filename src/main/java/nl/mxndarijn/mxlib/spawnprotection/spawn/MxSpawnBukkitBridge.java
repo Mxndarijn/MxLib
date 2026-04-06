@@ -1,6 +1,7 @@
 package nl.mxndarijn.mxlib.spawnprotection.spawn;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import nl.mxndarijn.mxlib.logger.MxLogger;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxGlobalEventBus;
 import nl.mxndarijn.mxlib.spawnprotection.events.pipeline.events.*;
 import org.bukkit.entity.Player;
@@ -205,6 +206,7 @@ public final class MxSpawnBukkitBridge implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
+        MxLogger.logMessage("Player " + e.getPlayer().getName() + " joined the server.: " + chatGuard.isPlayerInGame(e.getPlayer().getUniqueId()));
         bus.post(new MxSpawnPlayerJoinEvent(e.getPlayer(), e));
     }
 

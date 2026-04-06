@@ -53,7 +53,7 @@ public class MxScoreBoardTeam {
 
         String regex = "&#([0-9a-fA-F]{6})";
 
-        // Compileer het patroon
+        // Compile the pattern
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(line);
         int count = 0;

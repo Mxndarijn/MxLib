@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -73,11 +74,12 @@ public class MxChangeWorldManager implements Listener {
             } else {
                 MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.CHANGEWORLD_MANAGER, "World: " + e.getFrom().getName() + " not found (leaving this world). (" + e.getPlayer().getName() + ")");
             }
-        }
-        if (worlds.containsKey(to)) {
-            worlds.get(to).forEach(mxChangeWorld -> mxChangeWorld.enter(e.getPlayer(), toWorld, e));
-        } else {
-            MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.CHANGEWORLD_MANAGER, "World: " + e.getPlayer().getWorld().getName() + " not found (going to this world). (" + e.getPlayer().getName() + ")");
+
+            if (worlds.containsKey(to)) {
+                worlds.get(to).forEach(mxChangeWorld -> mxChangeWorld.enter(e.getPlayer(), toWorld, e));
+            } else {
+                MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.CHANGEWORLD_MANAGER, "World: " + e.getPlayer().getWorld().getName() + " not found (going to this world). (" + e.getPlayer().getName() + ")");
+            }
         }
     }
 
@@ -92,6 +94,20 @@ public class MxChangeWorldManager implements Listener {
             MxLogger.logMessage(MxLogLevel.DEBUG, MxStandardPrefix.CHANGEWORLD_MANAGER, "World: " + e.getWorld().getName() + " has been unloaded.");
             worlds.remove(worldUID);
 
+        }
+    }
+
+    /**
+     * Event handler for {@link PlayerQuitEvent}.
+     * @param e the event
+     */
+    @EventHandler
+    public void quit(PlayerQuitEvent e) {
+        World w = e.getPlayer().getWorld();
+        UUID worldUID = w.getUID();
+        unspecificWorlds.forEach(mxChangeWorld -> mxChangeWorld.quit(e.getPlayer(), w, e));
+        if (worlds.containsKey(worldUID)) {
+            worlds.get(worldUID).forEach(mxChangeWorld -> mxChangeWorld.quit(e.getPlayer(), w, e));
         }
     }
 

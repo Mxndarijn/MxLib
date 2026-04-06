@@ -1,6 +1,8 @@
 package nl.mxndarijn.mxlib.spawnprotection.spawn;
 
 import nl.mxndarijn.mxlib.logger.MxLogger;
+import nl.mxndarijn.mxlib.mxeventbus.core.MxCancellationState;
+import nl.mxndarijn.mxlib.mxeventbus.core.MxPriority;
 import nl.mxndarijn.mxlib.mxeventbus.core.MxSubscribe;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxGlobalEventContext;
 import nl.mxndarijn.mxlib.mxeventbus.global.MxWorldType;
@@ -52,13 +54,11 @@ public final class MxSpawnPlayerLifecycleListener extends MxGlobalEventListener 
      *
      * @param ctx the event context wrapping a {@link MxSpawnPlayerJoinEvent}
      */
-    @MxSubscribe
+    @MxSubscribe(priority = MxPriority.MONITOR)
     public void initializeJoiningPlayer(MxGlobalEventContext<MxSpawnPlayerJoinEvent, MxWorldType> ctx) {
         Player player = ctx.event().getPlayer();
-
-
-        MxLogger.logMessage("Player " + player.getName() + " joined the server.: " + provider.isPlayerInGame(player.getUniqueId()));
-        if (provider.isPlayerInGame(player.getUniqueId())) return;
+        if(ctx.isCancelled())
+            return;
 
         MxSupplierScoreBoard sb = provider.createScoreboard(player);
         scoreboards.put(player.getUniqueId(), sb);
@@ -69,6 +69,15 @@ public final class MxSpawnPlayerLifecycleListener extends MxGlobalEventListener 
         }
 
         provider.teleportToSpawn(player);
+    }
+
+    @MxSubscribe
+    public void cancelPlayerLoadSpawnIfPlayerIsInGame(MxGlobalEventContext<MxSpawnPlayerJoinEvent, MxWorldType> ctx) {
+        Player player = ctx.event().getPlayer();
+
+        if (provider.isPlayerInGame(player.getUniqueId())) {
+            ctx.submitVerdict(MxCancellationState.HARD_DENY);
+        }
     }
 
     /**

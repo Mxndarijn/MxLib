@@ -20,12 +20,12 @@ public class MxSignedBookItemStackBuilder extends MxItemStackBuilder<MxSignedBoo
 
     private String title = "Untitled";
     private String author = "Unknown";
-    private BookMeta.Generation generation = null; // optioneel
+    private BookMeta.Generation generation = null; // optional
     private final List<Component> pages = new ArrayList<>();
 
     private MxSignedBookItemStackBuilder(int amount) {
         super(Material.WRITTEN_BOOK, amount);
-        // forceer BookMeta
+        // force BookMeta
         ItemMeta im = itemStack.getItemMeta();
         if (!(im instanceof BookMeta)) {
             throw new IllegalStateException("ItemMeta is no book meta (expected WRITTEN_BOOK)");
@@ -60,31 +60,31 @@ public class MxSignedBookItemStackBuilder extends MxItemStackBuilder<MxSignedBoo
 
     /* ---------- Pagina’s toevoegen ---------- */
 
-    /** Voeg een complete pagina toe uit Components (je hebt volledige controle). */
+    /** Add a complete page from Components (you have full control). */
     public MxSignedBookItemStackBuilder addPage(Component page) {
         this.pages.add(page);
         return this;
     }
 
-    /** Voeg meerdere pagina’s in één keer toe. */
+    /** Add multiple pages at once. */
     public MxSignedBookItemStackBuilder addPages(Component... pageComponents) {
         this.pages.addAll(Arrays.asList(pageComponents));
         return this;
     }
 
-    /** Voeg een pagina via MiniMessage (kan styling en kleur bevatten). */
+    /** Add a page via MiniMessage (can contain styling and color). */
     public MxSignedBookItemStackBuilder addMiniPage(String miniMessagePage) {
         this.pages.add(MM.deserialize(miniMessagePage));
         return this;
     }
 
-    /** Snel: platte tekstpagina (regels met \n). */
+    /** Fast: plain text page (lines with \n). */
     public MxSignedBookItemStackBuilder addPlainPage(String plainText) {
         this.pages.add(Component.text(plainText));
         return this;
     }
 
-    /** Kleine helper: bouw een pagina van meerdere regels MiniMessage met automatische \n. */
+    /** Small helper: build a page from multiple MiniMessage lines with automatic \n. */
     public MxSignedBookItemStackBuilder addMiniPageLines(List<String> miniLines) {
         Component page = Component.empty();
         for (int i = 0; i < miniLines.size(); i++) {
@@ -125,7 +125,7 @@ public class MxSignedBookItemStackBuilder extends MxItemStackBuilder<MxSignedBoo
                 .hoverEvent(hoverMini == null ? null : HoverEvent.showText(MM.deserialize(hoverMini)));
     }
 
-    /** Voor navigatie binnen het boek (klik zet naar pagina X; 1-gebaseerd). */
+    /** For navigation within the book (clicking sets to page X; 1-based). */
     public static Component clickableChangePage(String displayMini, int pageNumber, String hoverMini) {
         return MM.deserialize(displayMini)
                 .clickEvent(ClickEvent.changePage(pageNumber))
@@ -143,7 +143,7 @@ public class MxSignedBookItemStackBuilder extends MxItemStackBuilder<MxSignedBoo
 
     @Override
     public ItemStack build() {
-        // stel BookMeta in vóór het super.build() (dat meta + lore toepast)
+        // set BookMeta before super.build() (which applies meta + lore)
         BookMeta meta = (BookMeta) this.itemMeta;
 
         meta.title(Component.text(this.title));
