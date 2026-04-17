@@ -91,7 +91,7 @@ public class MxGlobalAnnotationBinder<W extends MxIWorldType> extends MxAbstract
         MxSubscribe sub = method.getAnnotation(MxSubscribe.class);
         MxPriority priority = sub.priority();
         String name = sub.name().isBlank() ? method.getName() : sub.name();
-        boolean ignoreCancelled = sub.ignoreCancelled();
+        boolean ignoreCancelled = sub.doNotRunWhenEventCanceled();
 
         // Resolve permitted world types via the injected guard strategy
         Set<W> allowedWorlds = worldTypeGuard.resolve(method);

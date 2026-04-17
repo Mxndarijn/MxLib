@@ -5,6 +5,7 @@ import com.destroystokyo.paper.profile.ProfileProperty;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import nl.mxndarijn.mxlib.MxLib;
+import nl.mxndarijn.mxlib.util.MxBedrockUtil;
 import nl.mxndarijn.mxlib.configfiles.MxConfigService;
 import nl.mxndarijn.mxlib.configfiles.MxStandardConfigFile;
 import nl.mxndarijn.mxlib.logger.MxLogLevel;
@@ -250,17 +251,79 @@ public class MxHeadManager {
         return MxHeadSection.loadHead(key);
     }
 
+    /**
+     * Fetches and stores the skull texture for a Bedrock player directly via the Geyser/GeyserMC API,
+     * bypassing the item-based flow which does not work for Bedrock players.
+     *
+     * @param uuid        the UUID of the Bedrock player
+     * @param displayName the display name to store for the head entry
+     * @return {@code true} if the texture was stored successfully, {@code false} otherwise
+     */
+    public boolean storeBedrockSkullTexture(UUID uuid, String displayName) {
+        String key = uuid.toString();
+        Optional<String> textureOptional = getBedrockTexture(uuid);
+        if (textureOptional.isEmpty()) {
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not retrieve Bedrock texture for " + displayName + " (" + uuid + ")");
+            return false;
+        }
+        String texture = textureOptional.get();
+        Optional<MxHeadSection> optionalSection = MxHeadSection.loadHead(key);
+        if (optionalSection.isPresent()) {
+            MxHeadSection section = optionalSection.get();
+            section.setType(MxHeadsType.PLAYER);
+            section.setValue(texture);
+            section.setName(displayName);
+            section.setUuid(uuid);
+            section.apply();
+        } else {
+            Optional<MxHeadSection> section = MxHeadSection.create(key, displayName, MxHeadsType.PLAYER, texture, uuid);
+            if (section.isEmpty()) {
+                MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not create MxHeadSection for Bedrock player " + uuid);
+                return false;
+            }
+            section.get().apply();
+        }
+        return true;
+    }
+
     private Optional<String> getTexture(UUID uuid) {
-        Optional<String> texture = Optional.empty();
+        if (MxBedrockUtil.isBedrockPlayer(uuid)) {
+            return getBedrockTexture(uuid);
+        }
+        return getJavaTexture(uuid);
+    }
+
+    private Optional<String> getJavaTexture(UUID uuid) {
         try {
             URL url_1 = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
             InputStreamReader reader_1 = new InputStreamReader(url_1.openStream());
             JsonObject textureProperty = new JsonParser().parse(reader_1).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
-            texture = Optional.of(textureProperty.get("value").getAsString());
+            return Optional.of(textureProperty.get("value").getAsString());
         } catch (IOException e) {
             MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not retrieve skin data from mojang servers... (" + uuid.toString() + ")");
             e.printStackTrace();
         }
-        return texture;
+        return Optional.empty();
+    }
+
+    private Optional<String> getBedrockTexture(UUID uuid) {
+        Optional<String> xuidOptional = MxBedrockUtil.getXuid(uuid);
+        if (xuidOptional.isEmpty()) {
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not retrieve XUID for Bedrock player (" + uuid + ")");
+            return Optional.empty();
+        }
+        try {
+            URL url = new URL("https://api.geysermc.org/v2/skin/" + xuidOptional.get());
+            InputStreamReader reader = new InputStreamReader(url.openStream());
+            JsonObject skinData = new JsonParser().parse(reader).getAsJsonObject();
+            if (skinData.has("value")) {
+                return Optional.of(skinData.get("value").getAsString());
+            }
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "No texture value in GeyserMC skin API response for XUID " + xuidOptional.get());
+        } catch (IOException e) {
+            MxLogger.logMessage(MxLogLevel.ERROR, MxStandardPrefix.MXHEAD_MANAGER, "Could not retrieve skin data from GeyserMC API for Bedrock player (" + uuid + ")");
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 }

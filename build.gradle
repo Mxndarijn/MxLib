@@ -21,6 +21,10 @@ repositories {
         name ="placeholderapi"
         url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
     }
+
+    maven {
+        url = uri("https://repo.opencollab.dev/main/")
+    }
 }
 
 dependencies {
@@ -31,6 +35,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
     testCompileOnly 'org.projectlombok:lombok:1.18.34'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+    compileOnly('org.geysermc.geyser:api:2.9.0-SNAPSHOT')
+    compileOnly('org.geysermc.floodgate:api:2.2.4-SNAPSHOT')
 
     compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.6'

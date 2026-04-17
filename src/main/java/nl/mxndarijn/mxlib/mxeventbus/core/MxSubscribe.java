@@ -36,15 +36,7 @@ public @interface MxSubscribe {
      *
      * @return {@code true} to skip cancelled events; defaults to {@code false}
      */
-    boolean ignoreCancelled() default false;
-
-    /**
-     * When {@code true}, this handler runs in the {@link MxPriority#MONITOR} pass regardless
-     * of the {@link #priority()} value. Reserved for future use.
-     *
-     * @return {@code true} to force monitor-pass execution; defaults to {@code false}
-     */
-    boolean monitor() default false;
+    boolean doNotRunWhenEventCanceled() default false;
 
     /**
      * Optional human-readable name for this handler, used in trace output and diagnostics.

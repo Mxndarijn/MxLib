@@ -89,7 +89,7 @@ public final class MxSpawnProtectionListener extends MxGlobalEventListener {
     @MxWorldTypes(MxWorldType.SPAWN)
     public void rescuePlayerFromVoid(MxGlobalEventContext<MxSpawnPlayerMoveEvent, MxWorldType> ctx) {
         Player player = ctx.event().getPlayer();
-        if (player.getLocation().getY() < -50) {
+        if (player.getLocation().getY() < 0) {
             provider.teleportToSpawn(player);
         }
     }
@@ -178,7 +178,7 @@ public final class MxSpawnProtectionListener extends MxGlobalEventListener {
 
     /**
      * Handles player block interactions in the spawn world.
-     * Cancels interactions with flower pots, decorated pots, and all potted-plant variants (prevents stealing the planted item).
+     * Cancels interactions with flower pots, decorated pots, all potted-plant variants (prevents stealing the planted item), and dragon eggs (prevents teleportation).
      * Cancels interactions with inventory-opening blocks entirely.
      * Allows interactions with openable blocks (gates, doors, trapdoors) but schedules
      * a state restore via {@link MxBlockRestoreService} after 2 minutes.
@@ -204,7 +204,8 @@ public final class MxSpawnProtectionListener extends MxGlobalEventListener {
             return;
         }
 
-        if (type == Material.FLOWER_POT || type == Material.DECORATED_POT || type.name().startsWith("POTTED_")) {
+        if (type == Material.FLOWER_POT || type == Material.DECORATED_POT || type.name().startsWith("POTTED_")
+                || type == Material.DRAGON_EGG) {
             ctx.submitVerdict(MxCancellationState.HARD_DENY);
             return;
         }

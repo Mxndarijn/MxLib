@@ -14,7 +14,7 @@ public class MxScoreBoardTeam {
     @Getter
     private final String id;
     @Getter
-    private final String line;
+    private String line;
 
     @Getter
     private final Team team;
@@ -63,6 +63,7 @@ public class MxScoreBoardTeam {
         }
 
         int lineLength = line.length() - 8 * count + count * 2;
+        this.line = line;
         if (lineLength <= scoreboard.MAX_LINE_LENGTH / 2) {
             team.prefix(MiniMessage.miniMessage().deserialize("<!i>" + line));
             team.suffix(MiniMessage.miniMessage().deserialize("<!i>"));

@@ -91,7 +91,7 @@ public class MxGameAnnotationBinder<S extends MxIGameState, A extends MxIApplica
         MxSubscribe sub = method.getAnnotation(MxSubscribe.class);
         MxPriority priority = sub.priority();
         String name = sub.name().isBlank() ? method.getName() : sub.name();
-        boolean ignoreCancelled = sub.ignoreCancelled();
+        boolean ignoreCancelled = sub.doNotRunWhenEventCanceled();
 
         // Read guard annotations via injected strategies
         Set<S> allowedStates  = stateGuard.resolve(method);
